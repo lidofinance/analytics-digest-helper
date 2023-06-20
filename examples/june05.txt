@@ -1,0 +1,94 @@
+Lido Weekly Digest - June 05th 
+
+1/
+📈 Lido Analytics: May 29 - June 05, 2023
+
+TLDR:
+* Lido TVL jumped up 7.24% ending the week at $13.54b
+* Lido staking deposits on Ethereum exceeded 7M ETH 
+* wstETH amount on L2 jumped +11.71% to 92.5k wstETH hitting supply caps for AAVE wstETH pools on Arbitrum and Polygon 
+
+
+2/
+⚡️Lido TVL
+
+Lido TVL reached $13.54b (7d: +7.24%) at the end of the week thanks to the new deposits inflow on all Lido chains combined with growth in ETH and SOL token prices.
+
+
+3/
+⚡️ Lido Net Deposits on Ethereum
+
+Lido was leading in terms of net deposits to Beacon Chain (new gross deposits - principal withdrawals) - total value of 264.99k ETH, 
+followed by Unknown contract with 215.68k ETH deposits (at least 195.5k ETH came from Celsius)
+and Figment with 199.1k ETH deposits (at least 198.5k ETH came from Celsius)
+
+4/
+⚡️ Lido Withdrawals:
+
+* Requested: 20,354 ETH
+* Finalised: 14,321 ETH
+* Claimed: 15,339 ETH
+
+Note: the amount claimed might exceed the amount requested when users claim tokens requested in previous periods.
+
+
+5/
+⚡️stETH APR
+
+The current 7d MA APR is 4.51%. It was slightly decreasing over the last week.  
+
+
+6/ 
+🌊 LP: @CurveFinance 
+
+Curve ETH/stETH LP reserves:
+
+- ETH:	301,465 (7d: -8.78%)
+- stETH: 304,942 (7d: -7.21%)
+
+Liquidity reserves in the Curve pool continue shrinking gradually as the result of decrease in LDO incentives.
+
+stETH/ETH rate remained stable. The current rate is 0.9992 (UTC 08:00 June 05).
+
+7/ 
+🌊 LP: @AaveAave
+
+V2 stETH pool: 998,954 stETH (7d: +1.40%), 0 liquidations
+V3 wstETH pool: 254,045 wstETH (7d: +27.04%), 1 liquidation for 0.252 wstETH
+
+
+8/ 
+🌊 LP: @MakerDAO
+
+Maker wstETH-A: 346,578  (7d: +7.44%), 0 liquidations 
+Maker wstETH-B: 532,838 (7d: -0.08%), 0 liquidations
+Maker steCRV: 72,894 (7d: -31.16%), 0 liquidations
+
+
+9/ 
+🖥️ Lido on L2
+
+The amount of wstETH bridged to L2 jumped up +11.71%  reaching 92,542 wstETH:
+
+* Arbitrum: 48,595  wstETH (7d: +16.36%) 
+* Optimism: 39,415 wstETH (7d: +7.99%)  
+* Polygon:  4,532  wstETH (7d: -1.07%) 
+
+
+10/
+🌊 LP: @AaveAave on L2
+
+The rapid growth of wstETH on L2 was limited by hitting supply caps on Arbitrum and Polygon.    
+Arbitrum: 15k wstETH (+62.42%) - 100% supply cap
+Optimism: 16k wstETH  (+33.50%)  - 89% supply cap
+Polygon:  2.4k wstETH (+0%) - 100% supply cap
+
+
+11/  
+Note that by default the data is presented for Monday, 00:00 UTC (unless otherwise specified), with the change presented for the last 7 days.
+
+
+12/
+Check out the Lido Dashboards Catalogue https://dune.com/lido/lido-dashboards-catalogue to keep up with further Lido developments.
+
+🏝️

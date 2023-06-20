@@ -1,0 +1,74 @@
+Lido Weekly Digest - May 29th
+
+1/
+📈 Lido Analytics: May 22 - May 29, 2023
+
+TLDR:
+Lido TVL jumped up 11.24% - $13.23b at the end of the week.
+Lido captured 43.6% of new Ethereum staking deposits over the last week - total value of 321.2k ETH
+Weekly net deposits growth for Lido - 320.9k ETH - second to none.
+
+2/
+⚡️Lido TVL
+
+Lido TVL exceeded $13b for the first time since May 2022 thanks to the significant new deposits inflow combined with growth in token prices.
+
+Current TVL sits at $13.23b (7d: +11.24%)
+
+
+
+3/
+⚡️Lido on Ethereum
+
+Lido took in 43.6% of the new Ethereum staking deposits over the last week - total value of 321.2k ETH.
+
+
+
+4/
+⚡️ Lido Withdrawals
+
+Lido deposits were 35 times larger than requested withdrawals last week.
+
+Requested: 8,998 ETH
+Finalised: 8,523 ETH
+Claimed: 14,471 ETH
+
+Note: the amount claimed might exceed the amount requested when users claim tokens requested in previous periods.
+
+5/
+⚡️ Lido Net Deposits
+
+Lido was second to none in terms of net deposits to Beacon Chain (new gross deposits - principal withdrawals) - total value of 320.9k ETH.
+
+
+
+6/
+⚡️stETH APR
+
+The current 7d MA APR is 4.87% - a slight decrease compared to the previous week.
+
+
+
+7/
+🌊 LP: @CurveFinance
+
+Curve ETH/stETH LP reserves:
+
+
+- ETH:	330,491 (7d: -0.90%)
+- stETH: 328,647 (7d: -0.98)
+
+
+stETH/ETH rate remained close to parity during the week, moving in the 0.9989-1.00 range. The current rate is 0.9992 (UTC 15:00 May 29).
+
+
+
+8/
+Note that by default the data is presented for Monday, 00:00 UTC (unless otherwise specified), with the change presented for the last 7 days.
+
+
+9/
+Check out the Lido Dashboards Catalogue https://dune.com/lido/lido-dashboards-catalogue to keep up with further Lido developments.
+
+🏝️
+

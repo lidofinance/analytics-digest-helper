@@ -1,0 +1,93 @@
+Lido Weekly Digest - June 12th 
+
+1/
+📈 Lido Analytics: June 05 - June 12, 2023
+
+TLDR:
+* Lido TVL fell 6.16% due mainly to sharp token price drop, closing the week at $12.7b.
+* Lido led in net deposits to Beacon Chain with 112.5k ETH.
+* stETH/ETH remained stable despite market turbulence - the lowest rate during the week was 0.9980.
+* wstETH on L2 grew by +5.58% to hit 97,704 wstETH.
+
+
+2/
+⚡️Lido TVL
+
+Lido TVL shrank to $12.7b (7d: -6.16%) at the end of the week as a result of the sharp token prices drop.
+
+
+3/
+⚡️ Lido on Ethereum
+
+Lido kept leadership in net deposits to Beacon Chain (new gross deposits - principal withdrawals), with a total value of 112.5k ETH.
+ 
+4/
+⚡️ Lido Withdrawals:
+
+* Requested 54,971 ETH
+* Finalized 57,937 ETH
+* Claimed 53,876 ETH
+
+49.6% of the total amount was claimed by a single entity.
+
+Note: the amount finalized might exceed the amount requested as the protocol finalizes withdrawals requested in the previous period.
+
+
+5/
+⚡️ stETH APR
+
+The 7d MA for stETH APR decreased to 4.11% partially due to the considerable Beacon Chain activation queue (45+ days). 
+
+
+6/ 
+🌊 LP: @CurveFinance 
+
+Curve ETH/stETH LP reserves:
+
+- ETH:	291,758 (7d: -5.13%)
+- stETH: 288,155 (7d: -5.27%)
+
+stETH/ETH rate remained stable despite the recent market turbulence - the minimal rate during the week was 0.9980. The current rate is 0.9997 (UTC 07:00 June 12).
+
+
+7/ 
+🌊 LP: @AaveAave
+
+* V2 stETH pool: 955,021 stETH (7d: -4.40%), 2 liquidations for 0.52 stETH total
+* V3 wstETH pool: 272,962 wstETH (7d: +7.45%), 1 liquidation for 0.61 wstETH
+
+7.1/ 
+🌊 LP: @AaveAave on Polygon
+
+V3 stMATIC pool: 31.26m stMATIC (7d: +8.13%)
+
+170 liquidations for 691k stMATIC total took place last week, mostly on June 10 as a result of the abrupt MATIC/USD price drop. 
+
+Please track the state of your positions during the increased market volatility period and rebalance them accordingly.
+
+
+8/ 
+🌊 LP: @MakerDAO
+
+* Maker wstETH-A: 343,462  (7d: -0.90%), 0 liquidations 
+* Maker wstETH-B: 521,582 (7d: -2.11%), 0 liquidations
+* Maker steCRV: 72,894 (7d: 0%), 0 liquidations
+
+
+9/ 
+🖥️ Lido on L2
+
+The amount of wstETH bridged to L2 grew by +5.58% reaching 97,704 wstETH:
+* Arbitrum: 52,466  wstETH (7d: +7.97%) 
+* Optimism: 40,464 wstETH (7d: +2.66%)  
+* Polygon: 4,774  wstETH (7d: +5.33%) 
+
+
+10/  
+Note that by default the data is presented for Monday, 00:00 UTC (unless otherwise specified), with the change presented for the last 7 days.
+
+
+11/
+Check out the Lido Dashboards Catalogue https://dune.com/lido/lido-dashboards-catalogue to keep up with further Lido developments.
+
+🏝️
