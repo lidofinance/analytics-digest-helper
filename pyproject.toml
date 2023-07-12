@@ -10,6 +10,12 @@ packages = [{include = "analytics_digest_helper"}]
 python = "^3.9"
 openai = "^0.27.8"
 langchain = "^0.0.205"
+dune-client = "^1.1.1"
+python-dotenv = "^1.0.0"
+pandas = "^2.0.3"
+
+[tool.poetry.group.dev.dependencies]
+ipykernel = "^6.24.0"
 
 [build-system]
 requires = ["poetry-core"]
