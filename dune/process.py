@@ -132,6 +132,19 @@ def process_stEthOnL2(df: pd.DataFrame) -> str:
 
     return result_string
 
+def process_bridgeChange(df):
+    # Get the period changes for each bridge type
+    total_change = round(df.loc[df['bridge'] == 'total', 'period_change'].values[0], 2)
+    arbitrum_change = round(df.loc[df['bridge'] == 'Arbitrum Bridges', 'period_change'].values[0], 2)
+    optimism_change = round(df.loc[df['bridge'] == 'Optimism Bridges', 'period_change'].values[0], 2)
+    polygon_change = round(df.loc[df['bridge'] == 'Polygon Bridges', 'period_change'].values[0], 2)
+
+    # Format and return the message
+    return (f"Total period change: {total_change}. "
+            f"Arbitrum Bridge Change: {arbitrum_change}. "
+            f"Optimism Bridge Change: {optimism_change}. "
+            f"Polygon Bridge Change: {polygon_change}")
+
 # Define a dictionary mapping the DataFrame names to their respective processing functions
 process_functions = {
     "tvl": process_tvl,
@@ -139,7 +152,7 @@ process_functions = {
     "stETHApr": process_stETHApr,
     "stEthToEth": process_stEthToEth,
     "dexLiquidityReserves": process_dexLiquidityReserves,
-    "stEthOnL2": process_stEthOnL2
+    "bridgeChange": process_bridgeChange,
 }
 
 def process_dune(dune_results: dict[str, pd.DataFrame]) -> dict[str, str]:

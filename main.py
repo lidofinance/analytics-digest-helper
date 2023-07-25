@@ -7,13 +7,14 @@ from pathlib import Path
 import datetime
 import time
 import os
+import pickle
 
-def main(sol_tvl: float, start_date: datetime.datetime, end_date: datetime.datetime):
+def main(start_date: datetime.datetime, end_date: datetime.datetime, sol_start_deposits: float, sol_end_deposits: float):
     start_time = time.time() # start timing
-    print(f"sol_tvl: {sol_tvl}")
     print(f"start_date: {str(start_date)}")
     print(f"end_date: {str(end_date)}")
-    dune_loaded = load(str(start_date), str(end_date))
+    dune_loaded = load(str(start_date), str(end_date), sol_start_deposits, sol_end_deposits)
+    # dune_loaded = pickle.load(open('data/dune_data_2023-07-25_19-22.pkl', 'rb'))
     print(dune_loaded)
     processed = process_dune(dune_loaded)
     print(processed)
@@ -48,9 +49,11 @@ if __name__ == '__main__':
 
     parser = argparse.ArgumentParser(description="Lido Weekly Digest Helper")
 
-    parser.add_argument('-s', '--sol_tvl', type=float, required=True, help='Description for sol_tvl argument')
+    parser.add_argument('-ss', '--sol_start', type=float, required=True, help='Description for Solana Start Deposits argument')
+    parser.add_argument('-se', '--sol_end', type=float, required=True, help='Description for Solana End Deposits argument')
     parser.add_argument('-sd', '--start_date', type=str, required=True, help='Description for start_date argument')
     parser.add_argument('-ed', '--end_date', type=str, required=True, help='Description for end_date argument')
+    
 
     args = parser.parse_args()
 
@@ -58,4 +61,4 @@ if __name__ == '__main__':
     start_date = datetime.datetime.strptime(args.start_date, "%Y-%m-%d")
     end_date = datetime.datetime.strptime(args.end_date, "%Y-%m-%d")
 
-    main(args.sol_tvl, start_date, end_date)
+    main(start_date, end_date, args.sol_start, args.sol_end)

@@ -1,4 +1,7 @@
 dune/__pycache__/
 llm/__pycache__/
 graphing/__pycache__/
-
+.env
+data/
+*/.DS_store
+.DS_store
