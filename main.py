@@ -13,13 +13,11 @@ def main(start_date: datetime.datetime, end_date: datetime.datetime, sol_start_d
     start_time = time.time() # start timing
     print(f"start_date: {str(start_date)}")
     print(f"end_date: {str(end_date)}")
-    dune_loaded = load(str(start_date), str(end_date), sol_start_deposits, sol_end_deposits)
-    # dune_loaded = pickle.load(open('data/dune_data_2023-07-25_19-22.pkl', 'rb'))
-    print(dune_loaded)
+    # dune_loaded = load(str(start_date), str(end_date), sol_start_deposits, sol_end_deposits)
+    dune_loaded = pickle.load(open('data/dune_data_2023-07-31_10-28.pkl', 'rb'))
     processed = process_dune(dune_loaded)
-    print(processed)
 
-    thread = write_thread(processed)
+    thread = write_thread(processed, str(start_date), str(end_date))
     print(thread)
     
     print("Writing thread to file")

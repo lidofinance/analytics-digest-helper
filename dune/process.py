@@ -94,6 +94,34 @@ def process_dexLiquidityReserves(df: pd.DataFrame) -> str:
 
     return result_string
 
+def process_totalStEthinDeFi(df: pd.DataFrame) -> str:
+    def format_row(row):
+        # Format the row's data into a nice string.
+        title = row['title'].capitalize()
+        start_amount = row['start_amount']
+        end_amount = row['end_amount']
+        period_change = row['period_change'] * 100  # Convert to percentage
+
+        # Format amounts with commas as thousand separators and two decimal places.
+        formatted_start_amount = "{:,.2f}".format(start_amount)
+        formatted_end_amount = "{:,.2f}".format(end_amount)
+        formatted_period_change = "{:.2f}%".format(period_change)
+
+        # Check if the change is negative (a decrease).
+        if period_change < 0:
+            # If it's a decrease, remove the negative sign from the change and say "decreased by".
+            formatted_string = f"{title} decreased by {formatted_period_change[1:]}, ending at {formatted_end_amount}"
+        else:
+            # If it's not a decrease, say "increased by".
+            formatted_string = f"{title} increased by {formatted_period_change}, ending at {formatted_end_amount}"
+
+        return formatted_string
+
+    # Apply the function to each row in the df, creating a list of formatted strings.
+    formatted_strings = df.apply(format_row, axis=1).tolist()
+    return "\n".join(formatted_strings)
+
+
 def process_stEthOnL2(df: pd.DataFrame) -> str:
     # Select the row corresponding to 'total'
     total_row = df[df['bridge'] == 'total']
@@ -153,6 +181,7 @@ process_functions = {
     "stEthToEth": process_stEthToEth,
     "dexLiquidityReserves": process_dexLiquidityReserves,
     "bridgeChange": process_bridgeChange,
+    "totalStEthinDeFi": process_totalStEthinDeFi,
 }
 
 def process_dune(dune_results: dict[str, pd.DataFrame]) -> dict[str, str]:

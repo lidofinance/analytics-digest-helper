@@ -35,30 +35,30 @@ def get_queries(start_date: str, end_date: str, sol_start_deposits: float, sol_e
                 QueryParameter.date_type("digest_start_date", start_date),
             ],
         ),
-        # "dexLiquidityReserves": Query(
-        #     name="dexLiquidityReserves",
-        #     query_id=2706963,
-        #     params=[
-        #         QueryParameter.date_type("digest_start_date", start_date),
-        #         QueryParameter.date_type("digest_end_date", end_date),
-        #     ],
-        # ),
+        "dexLiquidityReserves": Query(
+            name="dexLiquidityReserves",
+            query_id=2706963,
+            params=[
+                QueryParameter.date_type("digest_start_date", start_date),
+                QueryParameter.date_type("digest_end_date", end_date),
+            ],
+        ),
         "stEthOnL2Bridges": Query(
             name="stEthOnL2Bridges",
             query_id=2709440,
             params=[
                 QueryParameter.date_type("digest_start_date", start_date),
-                QueryParameter.date_type("digest_end_ date", end_date),
+                QueryParameter.date_type("digest_end_date", end_date),
             ]
         ),
-        # "totalStEthinDeFi": Query(
-        #     name="totalStEthInDeFi",
-        #     query_id=2698624,
-        #     params=[
-        #         QueryParameter.date_type("digest_start_date", start_date),
-        #         QueryParameter.date_type("digest_end_date", end_date),
-        #     ]
-        # ),
+        "totalStEthinDeFi": Query(
+            name="totalStEthInDeFi",
+            query_id=2698624,
+            params=[
+                QueryParameter.date_type("digest_start_date", start_date),
+                QueryParameter.date_type("digest_end_date", end_date),
+            ]
+        ),
         "bridgeChange": Query(
             name="bridgeChange",
             query_id=2709470,
