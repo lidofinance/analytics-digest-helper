@@ -35,7 +35,7 @@ def main(
     print("Graphing")
     grapher = Grapher(str(end_date))
     grapher.process_all(dune_loaded)
-    print(f"Done Graphing. Graphs are saved in graphs/{end_date}folder")
+    print(f"Done Graphing. Graphs are saved in graphs/{end_date} folder")
     end_time = time.time()
     print(f"Time taken: {end_time - start_time} seconds")
     return
@@ -43,11 +43,11 @@ def main(
 
 if __name__ == "__main__":
 
-    if os.environ.get("DUNE_API_KEY") == None:
+    if os.environ.get("DUNE_API_KEY") is None:
         print("Please set DUNE_API_KEY environment variable")
         exit(1)
 
-    if os.environ.get("OPENAI_API_KEY") == None:
+    if os.environ.get("OPENAI_API_KEY") is None:
         print("Please set OPENAI_API_KEY environment variable")
         exit(1)
 
@@ -72,14 +72,14 @@ if __name__ == "__main__":
         "--start_date",
         type=str,
         required=True,
-        help="Description for start_date argument",
+        help="Description for start_date argument in %Y-%m-%d format",
     )
     parser.add_argument(
         "-ed",
         "--end_date",
         type=str,
         required=True,
-        help="Description for end_date argument",
+        help="Description for end_date argument in %Y-%m-%d format",
     )
 
     args = parser.parse_args()
