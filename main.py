@@ -1,49 +1,91 @@
+import argparse
+from dune.loader import load
+from dune.process import process_dune
+from llm.writer import write_thread
+from graphing.graph import Grapher
+from pathlib import Path
+import datetime
+import time
 import os
-
-examples = []
-for filename in os.listdir("examples"):
-    with open(f"examples/{filename}", "r") as f:
-        examples.append(f.read())
-
-prompt = """
-Here are the analytics digests in the form of Twitter thread
-{examples}
-
-You need to make a new one for the next week on the same form
-You should point up any change compared with the previous week
-Current metric values are:
-{metrics}
-"""
+import pickle
 
 
-metrics = """
-TVL: $12.7b
+def main(
+    start_date: datetime.datetime,
+    end_date: datetime.datetime,
+    sol_start_deposits: float,
+    sol_end_deposits: float,
+):
+    start_time = time.time()  # start timing
+    print(f"start_date: {str(start_date)}")
+    print(f"end_date: {str(end_date)}")
+    dune_loaded = load(str(start_date), str(end_date), sol_start_deposits, sol_end_deposits)
+    # dune_loaded = pickle.load(open('data/dune_data_2023-07-31_10-28.pkl', 'rb'))
+    processed = process_dune(dune_loaded)
 
-Withdrawals:
-- requested 54,971 ETH
-- finalized 57,937 ETH
-- claimed 53,876 ETH
+    thread = write_thread(processed, str(start_date), str(end_date))
+    print(thread)
 
-stETH APR: 4.11%
+    print("Writing thread to file")
+    Path(f"threads/{str(end_date)}").mkdir(parents=True, exist_ok=True)
+    with open(f"threads/{str(end_date)}/thread.md", "w") as f:
+        f.write(thread)
+    print(f"Wrote thread to file in threads/{end_date}/thread.md")
 
-LP: Curve reserves:
-- ETH: 291,758
-- stETH: 288,155
+    print("Graphing")
+    grapher = Grapher(str(end_date))
+    grapher.process_all(dune_loaded)
+    print(f"Done Graphing. Graphs are saved in graphs/{end_date} folder")
+    end_time = time.time()
+    print(f"Time taken: {end_time - start_time} seconds")
+    return
 
-LP: Aave:
-- V2 stETH pool: 955,021 stETH, 2 liquidations for 0.52 stETH total
-- V3 wstETH pool: 272,962 wstETH, 1 liquidation for 0.61 wstETH
 
-LP: Maker
-- Maker wstETH-A: 343,462, 0 liquidations
-- Maker wstETH-B: 521,582, 0 liquidations
-- Maker steCRV: 72,894, 0 liquidations
+if __name__ == "__main__":
 
-LP: Lido on L2
-- Arbitrum: 52,466 wstETH
-- Optimism: 40,464 wstETH
-- Polygon: 4,774 wstETH
-"""
+    if os.environ.get("DUNE_API_KEY") is None:
+        print("Please set DUNE_API_KEY environment variable")
+        exit(1)
 
-result = prompt.format(examples="\n".join(examples), metrics=metrics)
-print(result)
+    if os.environ.get("OPENAI_API_KEY") is None:
+        print("Please set OPENAI_API_KEY environment variable")
+        exit(1)
+
+    parser = argparse.ArgumentParser(description="Lido Weekly Digest Helper")
+
+    parser.add_argument(
+        "-ss",
+        "--sol_start",
+        type=float,
+        required=True,
+        help="Description for Solana Start Deposits argument",
+    )
+    parser.add_argument(
+        "-se",
+        "--sol_end",
+        type=float,
+        required=True,
+        help="Description for Solana End Deposits argument",
+    )
+    parser.add_argument(
+        "-sd",
+        "--start_date",
+        type=str,
+        required=True,
+        help="Description for start_date argument in %Y-%m-%d format",
+    )
+    parser.add_argument(
+        "-ed",
+        "--end_date",
+        type=str,
+        required=True,
+        help="Description for end_date argument in %Y-%m-%d format",
+    )
+
+    args = parser.parse_args()
+
+    # convert start date and ed to datetime objects
+    start_date = datetime.datetime.strptime(args.start_date, "%Y-%m-%d")
+    end_date = datetime.datetime.strptime(args.end_date, "%Y-%m-%d")
+
+    main(start_date, end_date, args.sol_start, args.sol_end)
