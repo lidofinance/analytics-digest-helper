@@ -7,7 +7,7 @@ from pathlib import Path
 import datetime
 import time
 import os
-import pickle
+from dotenv import load_dotenv
 
 
 def main(
@@ -42,7 +42,7 @@ def main(
 
 
 if __name__ == "__main__":
-
+    load_dotenv()
     if os.environ.get("DUNE_API_KEY") is None:
         print("Please set DUNE_API_KEY environment variable")
         exit(1)
