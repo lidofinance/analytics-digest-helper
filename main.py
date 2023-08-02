@@ -37,7 +37,7 @@ def main(
 
     print("Graphing")
     grapher = Grapher(str(end_date))
-    print(dune_loaded['totalStEthInDeFi'])
+    print(dune_loaded["totalStEthInDeFi"])
     grapher.process_all(dune_loaded)
     print(f"Done Graphing. Graphs are saved in graphs/{end_date} folder")
     end_time = time.time()

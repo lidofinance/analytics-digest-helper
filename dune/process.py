@@ -69,20 +69,19 @@ def process_stETHApr(df: pd.DataFrame) -> str:
 
 def process_stEthToEth(df: pd.DataFrame) -> str:
     # Convert 'time' column to datetime
-    df['time'] = pd.to_datetime(df['time'])
+    df["time"] = pd.to_datetime(df["time"])
 
     # Sort DataFrame by time in descending order
-    df = df.sort_values('time', ascending=False)
-    
+    df = df.sort_values("time", ascending=False)
+
     # Get the most recent 'weight_avg_price'
-    recent_price = df['weight_avg_price'].iloc[0]
+    recent_price = df["weight_avg_price"].iloc[0]
 
     # Calculate the volatility of the 'weight_avg_price'
-    volatility = df['weight_avg_price'].std()
+    volatility = df["weight_avg_price"].std()
 
     # Return results as a string
     return f"The week ended with a ratio of {recent_price}. The ratio over the week had a standard deviation of {volatility}"
-
 
 
 def process_dexLiquidityReserves(df: pd.DataFrame) -> str:
@@ -104,16 +103,17 @@ def process_dexLiquidityReserves(df: pd.DataFrame) -> str:
 
     return result_string
 
+
 def process_totalStEthInDeFi(df: pd.DataFrame) -> str:
     # Calculate the changes
-    liquidity_pools_diff = df['liquidity_pools'].diff().dropna()
-    lending_pools_diff = df['lending_pools'].diff().dropna()
-    stETH_in_DeFi_diff = df['stETH_in_DeFi'].diff().dropna()
+    liquidity_pools_diff = df["liquidity_pools"].diff().dropna()
+    lending_pools_diff = df["lending_pools"].diff().dropna()
+    stETH_in_DeFi_diff = df["stETH_in_DeFi"].diff().dropna()
 
     # Calculate the percentage changes
-    liquidity_pools_pct_change = df['liquidity_pools'].pct_change().dropna() * 100
-    lending_pools_pct_change = df['lending_pools'].pct_change().dropna() * 100
-    stETH_in_DeFi_pct_change = df['stETH_in_DeFi'].pct_change().dropna() * 100
+    liquidity_pools_pct_change = df["liquidity_pools"].pct_change().dropna() * 100
+    lending_pools_pct_change = df["lending_pools"].pct_change().dropna() * 100
+    stETH_in_DeFi_pct_change = df["stETH_in_DeFi"].pct_change().dropna() * 100
 
     # Get the total changes
     total_liquidity_pools_change = liquidity_pools_diff.sum()
@@ -121,9 +121,15 @@ def process_totalStEthInDeFi(df: pd.DataFrame) -> str:
     total_stETH_in_DeFi_change = stETH_in_DeFi_diff.sum()
 
     # Get the total percentage changes
-    total_liquidity_pools_pct_change = (df['liquidity_pools'].iloc[-1] - df['liquidity_pools'].iloc[0]) / df['liquidity_pools'].iloc[0] * 100
-    total_lending_pools_pct_change = (df['lending_pools'].iloc[-1] - df['lending_pools'].iloc[0]) / df['lending_pools'].iloc[0] * 100
-    total_stETH_in_DeFi_pct_change = (df['stETH_in_DeFi'].iloc[-1] - df['stETH_in_DeFi'].iloc[0]) / df['stETH_in_DeFi'].iloc[0] * 100
+    total_liquidity_pools_pct_change = (
+        (df["liquidity_pools"].iloc[-1] - df["liquidity_pools"].iloc[0]) / df["liquidity_pools"].iloc[0] * 100
+    )
+    total_lending_pools_pct_change = (
+        (df["lending_pools"].iloc[-1] - df["lending_pools"].iloc[0]) / df["lending_pools"].iloc[0] * 100
+    )
+    total_stETH_in_DeFi_pct_change = (
+        (df["stETH_in_DeFi"].iloc[-1] - df["stETH_in_DeFi"].iloc[0]) / df["stETH_in_DeFi"].iloc[0] * 100
+    )
 
     # Format the changes into a string
     result = f"""

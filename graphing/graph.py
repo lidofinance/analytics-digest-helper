@@ -8,6 +8,7 @@ from pathlib import Path
 from datetime import datetime
 from matplotlib.dates import DateFormatter
 
+
 class Grapher:
     def __init__(self, end_date: str):
         self.end_date = end_date
@@ -29,7 +30,7 @@ class Grapher:
         fig, ax = plt.subplots(1, 1, figsize=(10, 2))
 
         # Remove the axes of the subplot
-        ax.axis('off')
+        ax.axis("off")
 
         # Format the values in the table with commas for each thousand like 123,456,789.99
         cell_text = df.values.copy()
@@ -37,51 +38,45 @@ class Grapher:
             for j in range(cell_text.shape[1]):
                 if isinstance(cell_text[i, j], float):
                     # Express 'period_change' as a percentage
-                    if df.columns[j] == 'period_change':
-                        cell_text[i, j] = '{:.2f}%'.format(cell_text[i, j] * 100)
+                    if df.columns[j] == "period_change":
+                        cell_text[i, j] = "{:.2f}%".format(cell_text[i, j] * 100)
                     else:
-                        cell_text[i, j] = '{:,.2f}'.format(cell_text[i, j])
-        
+                        cell_text[i, j] = "{:,.2f}".format(cell_text[i, j])
+
         # Create a table and add it to the subplot
-        table = plt.table(cellText=cell_text, 
-                        colLabels=df.columns, 
-                        cellLoc='center', 
-                        loc='center',
-                        bbox=[0, 0, 1, 1])
+        table = plt.table(cellText=cell_text, colLabels=df.columns, cellLoc="center", loc="center", bbox=[0, 0, 1, 1])
 
         # Apply style to the table
         table.auto_set_font_size(False)
         table.set_fontsize(10)
         table.scale(1, 1.5)
-        Path(f'graphs/{self.end_date}').mkdir(parents=True, exist_ok=True)
-        fig.savefig(f'graphs/{self.end_date}/dexLiquidityReserves.png')
-    
+        Path(f"graphs/{self.end_date}").mkdir(parents=True, exist_ok=True)
+        fig.savefig(f"graphs/{self.end_date}/dexLiquidityReserves.png")
 
     def graph_totalStEthInDeFi(self, df: pd.DataFrame):
         # Convert time column to datetime format and set it as the index
-        df['time'] = pd.to_datetime(df['time'])
-        df.set_index('time', inplace=True)
+        df["time"] = pd.to_datetime(df["time"])
+        df.set_index("time", inplace=True)
 
         # Create a figure and axis for the plot
         fig, ax = plt.subplots(figsize=(10, 6))
 
         # Create the line plot
-        sns.lineplot(data=df, x=df.index, y='stETH_DeFi_share', ax=ax, color='blue')
+        sns.lineplot(data=df, x=df.index, y="stETH_DeFi_share", ax=ax, color="blue")
 
         # Set the x-axis formatter to display date in "Month Day" format
-        ax.xaxis.set_major_formatter(DateFormatter('%B %d'))
+        ax.xaxis.set_major_formatter(DateFormatter("%B %d"))
 
         # Rotate x-axis labels for better visibility
         plt.xticks(rotation=45)
 
         # Set plot title and labels
-        ax.set_title('stETH DeFi Share Over Time')
-        ax.set_xlabel('Date')
-        ax.set_ylabel('stETH DeFi Share')
+        ax.set_title("stETH DeFi Share Over Time")
+        ax.set_xlabel("Date")
+        ax.set_ylabel("stETH DeFi Share")
 
-        Path(f'graphs/{self.end_date}').mkdir(parents=True, exist_ok=True)
-        plt.savefig(f'graphs/{self.end_date}/totalStEthInDeFi.png')
-
+        Path(f"graphs/{self.end_date}").mkdir(parents=True, exist_ok=True)
+        plt.savefig(f"graphs/{self.end_date}/totalStEthInDeFi.png")
 
     def graph_tvl(self, df: pd.DataFrame):
         df = df.reset_index(drop=True)
@@ -90,22 +85,22 @@ class Grapher:
         df.fillna("", inplace=True)
 
         # Calculate the figure height based on the number of rows and columns. Added extra space for the column headers.
-        fig_height = df.shape[0]*0.4 + len(max(df.columns, key=len))/1.5
+        fig_height = df.shape[0] * 0.4 + len(max(df.columns, key=len)) / 1.5
 
         # Create a figure and a subplot
         fig, ax = plt.subplots(figsize=(10, fig_height))
 
         # Hide axes
-        ax.axis('off')
+        ax.axis("off")
 
         # Create the table and scale it to the subplot
-        table = plt.table(cellText=df.values, cellLoc = 'center', loc='center')
+        table = plt.table(cellText=df.values, cellLoc="center", loc="center")
         table.auto_set_font_size(False)
         table.set_fontsize(10)
         table.scale(1, 1.5)
 
-        Path(f'graphs/{self.end_date}').mkdir(parents=True, exist_ok=True)
-        fig.savefig(f'graphs/{self.end_date}/tvl.png')
+        Path(f"graphs/{self.end_date}").mkdir(parents=True, exist_ok=True)
+        fig.savefig(f"graphs/{self.end_date}/tvl.png")
 
     def graph_stETHApr(self, df: pd.DataFrame):
         plt.clf()
@@ -138,30 +133,30 @@ class Grapher:
 
     def graph_stEthToEth(self, df: pd.DataFrame):
         # Convert 'time' column to datetime if it's not already
-        if df['time'].dtype == 'O':
-            df['time'] = pd.to_datetime(df['time'])
+        if df["time"].dtype == "O":
+            df["time"] = pd.to_datetime(df["time"])
 
         # Create a plot
         fig, ax = plt.subplots(figsize=(12, 6))
-        
+
         # Use Seaborn to create the line plot
-        sns.lineplot(x='time', y='weight_avg_price', data=df, ax=ax)
-        
+        sns.lineplot(x="time", y="weight_avg_price", data=df, ax=ax)
+
         # Set plot title and labels
-        plt.title('Weighted Average Price Over Time')
-        plt.xlabel('Time')
-        plt.ylabel('Weighted Average Price')
-        
+        plt.title("Weighted Average Price Over Time")
+        plt.xlabel("Time")
+        plt.ylabel("Weighted Average Price")
+
         # Set x-axis date format without year and time
-        date_format = mdates.DateFormatter('%b %d')
+        date_format = mdates.DateFormatter("%b %d")
         plt.gca().xaxis.set_major_formatter(date_format)
-        
+
         # Rotate x-axis labels for better readability
         plt.xticks(rotation=45)
 
         # Save the plot to a file in graphs/<end_date> folder. make the folder if it doesn't exist.
-        Path(f'graphs/{self.end_date}').mkdir(parents=True, exist_ok=True)
-        fig.savefig(f'graphs/{self.end_date}/stEthToEth.png')
+        Path(f"graphs/{self.end_date}").mkdir(parents=True, exist_ok=True)
+        fig.savefig(f"graphs/{self.end_date}/stEthToEth.png")
 
     def graph_netDepositGrowthLeaders(self, df: pd.DataFrame):
         plt.clf()
@@ -171,8 +166,8 @@ class Grapher:
         top_10 = df.sort_values(by="eth_deposits_growth", ascending=False).iloc[:10]
 
         sns.barplot(x="eth_deposits_growth", y="name", data=top_10, ax=ax)
-        ax.set(xlabel='ETH Deposits Growth', ylabel='Protocol')
-        ax.set_title('ETH Deposits Growth Leaders')
+        ax.set(xlabel="ETH Deposits Growth", ylabel="Protocol")
+        ax.set_title("ETH Deposits Growth Leaders")
 
         # Save the plot to a file in graphs/<end_date> folder. make the folder if it doesn't exist.
         Path(f"graphs/{self.end_date}").mkdir(parents=True, exist_ok=True)
@@ -222,8 +217,8 @@ class Grapher:
         # Rotate date labels slightly
         plt.xticks(rotation=30)
 
-        Path(f'graphs/{self.end_date}').mkdir(parents=True, exist_ok=True)
-        fig.savefig(f'graphs/{self.end_date}/stEthOnL2Bridges.png')
+        Path(f"graphs/{self.end_date}").mkdir(parents=True, exist_ok=True)
+        fig.savefig(f"graphs/{self.end_date}/stEthOnL2Bridges.png")
 
     def process_all(self, dune_dataframes: dict[str, pd.DataFrame]):
         # for k, v in dune_dataframes.items():
