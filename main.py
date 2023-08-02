@@ -8,16 +8,18 @@ import datetime
 import time
 import os
 import pickle
+from llm.blocks import BlockWriter
 
 def main(start_date: datetime.datetime, end_date: datetime.datetime, sol_start_deposits: float, sol_end_deposits: float):
     start_time = time.time() # start timing
     print(f"start_date: {str(start_date)}")
     print(f"end_date: {str(end_date)}")
-    dune_loaded = load(str(start_date), str(end_date), sol_start_deposits, sol_end_deposits)
-    # dune_loaded = pickle.load(open('data/dune_data_2023-07-31_10-28.pkl', 'rb'))
+    # dune_loaded = load(str(start_date), str(end_date), sol_start_deposits, sol_end_deposits)
+    dune_loaded = pickle.load(open('data/dune_data_2023-08-02_11-18.pkl', 'rb'))
     processed = process_dune(dune_loaded)
 
-    thread = write_thread(processed, str(start_date), str(end_date))
+    writer = BlockWriter(str(end_date), str(start_date))
+    thread = writer.compose_thread(processed)
     print(thread)
     
     print("Writing thread to file")
@@ -28,6 +30,7 @@ def main(start_date: datetime.datetime, end_date: datetime.datetime, sol_start_d
 
     print("Graphing")
     grapher = Grapher(str(end_date))
+    print(dune_loaded['totalStEthInDeFi'])
     grapher.process_all(dune_loaded)
     print(f"Done Graphing. Graphs are saved in graphs/{end_date}folder")
     end_time = time.time()

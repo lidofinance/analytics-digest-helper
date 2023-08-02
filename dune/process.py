@@ -66,13 +66,21 @@ def process_stETHApr(df: pd.DataFrame) -> str:
     return result_string
 
 def process_stEthToEth(df: pd.DataFrame) -> str:
-    # Get the most recent weight_avg_price
-    recent_avg_price = df['weight_avg_price'].values[0]
-    
-    # Format the result into a string with 6 decimal places
-    result_string = f"stETH/ETH price: {recent_avg_price:.6f}"
+    # Convert 'time' column to datetime
+    df['time'] = pd.to_datetime(df['time'])
 
-    return result_string
+    # Sort DataFrame by time in descending order
+    df = df.sort_values('time', ascending=False)
+    
+    # Get the most recent 'weight_avg_price'
+    recent_price = df['weight_avg_price'].iloc[0]
+
+    # Calculate the volatility of the 'weight_avg_price'
+    volatility = df['weight_avg_price'].std()
+
+    # Return results as a string
+    return f"The week ended with a ratio of {recent_price}. The ratio over the week had a standard deviation of {volatility}"
+
 
 
 def process_dexLiquidityReserves(df: pd.DataFrame) -> str:
@@ -94,32 +102,43 @@ def process_dexLiquidityReserves(df: pd.DataFrame) -> str:
 
     return result_string
 
-def process_totalStEthinDeFi(df: pd.DataFrame) -> str:
-    def format_row(row):
-        # Format the row's data into a nice string.
-        title = row['title'].capitalize()
-        start_amount = row['start_amount']
-        end_amount = row['end_amount']
-        period_change = row['period_change'] * 100  # Convert to percentage
+def process_totalStEthInDeFi(df: pd.DataFrame) -> str:
+    # Calculate the changes
+    liquidity_pools_diff = df['liquidity_pools'].diff().dropna()
+    lending_pools_diff = df['lending_pools'].diff().dropna()
+    stETH_in_DeFi_diff = df['stETH_in_DeFi'].diff().dropna()
 
-        # Format amounts with commas as thousand separators and two decimal places.
-        formatted_start_amount = "{:,.2f}".format(start_amount)
-        formatted_end_amount = "{:,.2f}".format(end_amount)
-        formatted_period_change = "{:.2f}%".format(period_change)
+    # Calculate the percentage changes
+    liquidity_pools_pct_change = df['liquidity_pools'].pct_change().dropna() * 100
+    lending_pools_pct_change = df['lending_pools'].pct_change().dropna() * 100
+    stETH_in_DeFi_pct_change = df['stETH_in_DeFi'].pct_change().dropna() * 100
 
-        # Check if the change is negative (a decrease).
-        if period_change < 0:
-            # If it's a decrease, remove the negative sign from the change and say "decreased by".
-            formatted_string = f"{title} decreased by {formatted_period_change[1:]}, ending at {formatted_end_amount}"
-        else:
-            # If it's not a decrease, say "increased by".
-            formatted_string = f"{title} increased by {formatted_period_change}, ending at {formatted_end_amount}"
+    # Get the total changes
+    total_liquidity_pools_change = liquidity_pools_diff.sum()
+    total_lending_pools_change = lending_pools_diff.sum()
+    total_stETH_in_DeFi_change = stETH_in_DeFi_diff.sum()
 
-        return formatted_string
+    # Get the total percentage changes
+    total_liquidity_pools_pct_change = (df['liquidity_pools'].iloc[-1] - df['liquidity_pools'].iloc[0]) / df['liquidity_pools'].iloc[0] * 100
+    total_lending_pools_pct_change = (df['lending_pools'].iloc[-1] - df['lending_pools'].iloc[0]) / df['lending_pools'].iloc[0] * 100
+    total_stETH_in_DeFi_pct_change = (df['stETH_in_DeFi'].iloc[-1] - df['stETH_in_DeFi'].iloc[0]) / df['stETH_in_DeFi'].iloc[0] * 100
 
-    # Apply the function to each row in the df, creating a list of formatted strings.
-    formatted_strings = df.apply(format_row, axis=1).tolist()
-    return "\n".join(formatted_strings)
+    # Format the changes into a string
+    result = f"""
+    Liquidity Pools:
+    Absolute change: {total_liquidity_pools_change}
+    Percentage change: {total_liquidity_pools_pct_change}%
+
+    Lending Pools:
+    Absolute change: {total_lending_pools_change}
+    Percentage change: {total_lending_pools_pct_change}%
+
+    Total stETH in DeFi:
+    Absolute change: {total_stETH_in_DeFi_change}
+    Percentage change: {total_stETH_in_DeFi_pct_change}%
+    """
+
+    return result
 
 
 def process_stEthOnL2(df: pd.DataFrame) -> str:
@@ -156,7 +175,7 @@ def process_stEthOnL2(df: pd.DataFrame) -> str:
         bridge_data_str += f"{bridge}: {end_amount_str} (7d: {period_change_str})\n"
 
     # Combine the total and bridge data into a result string
-    result_string = f"The amount of wstETH on L2 grew by {total_period_change_str}, hitting {total_end_amount_str}:\n\n{bridge_data_str}"
+    result_string = f"The amount of wstETH on L2 changed by {total_period_change_str}, hitting {total_end_amount_str}:\n\n{bridge_data_str}"
 
     return result_string
 
@@ -181,7 +200,7 @@ process_functions = {
     "stEthToEth": process_stEthToEth,
     "dexLiquidityReserves": process_dexLiquidityReserves,
     "bridgeChange": process_bridgeChange,
-    "totalStEthinDeFi": process_totalStEthinDeFi,
+    "totalStEthInDeFi": process_totalStEthInDeFi,
 }
 
 def process_dune(dune_results: dict[str, pd.DataFrame]) -> dict[str, str]:
