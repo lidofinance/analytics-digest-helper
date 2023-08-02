@@ -9,7 +9,7 @@ packages = []
 [tool.poetry.dependencies]
 python = "^3.9"
 openai = "^0.27.8"
-langchain = "^0.0.205"
+langchain = "^0.0.249"
 dune-client = "^1.1.1"
 python-dotenv = "^1.0.0"
 pandas = "^2.0.3"
