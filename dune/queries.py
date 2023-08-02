@@ -1,6 +1,7 @@
 from dune_client.query import Query
 from dune_client.types import QueryParameter
 
+
 def get_queries(start_date: str, end_date: str, sol_start_deposits: float, sol_end_deposits: float):
     queries = {
         "tvl": Query(
@@ -11,7 +12,7 @@ def get_queries(start_date: str, end_date: str, sol_start_deposits: float, sol_e
                 QueryParameter.date_type("digest_end_date", end_date),
                 QueryParameter.number_type("solana_start_deposits", sol_start_deposits),
                 QueryParameter.number_type("solana_end_deposits", sol_end_deposits),
-            ]
+            ],
         ),
         "netDepositGrowthLeaders": Query(
             name="netDepositGrowthLeaders",
@@ -19,7 +20,7 @@ def get_queries(start_date: str, end_date: str, sol_start_deposits: float, sol_e
             params=[
                 QueryParameter.date_type("digest_start_date", start_date),
                 QueryParameter.date_type("digest_end_date", end_date),
-            ]
+            ],
         ),
         "stETHApr": Query(
             name="stETHApr",
@@ -50,7 +51,7 @@ def get_queries(start_date: str, end_date: str, sol_start_deposits: float, sol_e
             params=[
                 QueryParameter.date_type("digest_start_date", start_date),
                 QueryParameter.date_type("digest_end_date", end_date),
-            ]
+            ],
         ),
         "bridgeChange": Query(
             name="bridgeChange",
@@ -58,7 +59,7 @@ def get_queries(start_date: str, end_date: str, sol_start_deposits: float, sol_e
             params=[
                 QueryParameter.date_type("digest_start_date", start_date),
                 QueryParameter.date_type("digest_end_date", end_date),
-            ]
+            ],
         ),
         "totalStEthInDeFi": Query(
             name="totalStEthInDeFi",

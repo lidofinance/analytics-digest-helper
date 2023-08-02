@@ -10,8 +10,14 @@ import os
 import pickle
 from llm.blocks import BlockWriter
 
-def main(start_date: datetime.datetime, end_date: datetime.datetime, sol_start_deposits: float, sol_end_deposits: float):
-    start_time = time.time() # start timing
+
+def main(
+    start_date: datetime.datetime,
+    end_date: datetime.datetime,
+    sol_start_deposits: float,
+    sol_end_deposits: float,
+):
+    start_time = time.time()  # start timing
     print(f"start_date: {str(start_date)}")
     print(f"end_date: {str(end_date)}")
     # dune_loaded = load(str(start_date), str(end_date), sol_start_deposits, sol_end_deposits)
@@ -21,10 +27,10 @@ def main(start_date: datetime.datetime, end_date: datetime.datetime, sol_start_d
     writer = BlockWriter(str(end_date), str(start_date))
     thread = writer.compose_thread(processed)
     print(thread)
-    
+
     print("Writing thread to file")
-    Path(f'threads/{str(end_date)}').mkdir(parents=True, exist_ok=True)
-    with open(f'threads/{str(end_date)}/thread.md', 'w') as f:
+    Path(f"threads/{str(end_date)}").mkdir(parents=True, exist_ok=True)
+    with open(f"threads/{str(end_date)}/thread.md", "w") as f:
         f.write(thread)
     print(f"Wrote thread to file in threads/{end_date}/thread.md")
 
@@ -32,29 +38,52 @@ def main(start_date: datetime.datetime, end_date: datetime.datetime, sol_start_d
     grapher = Grapher(str(end_date))
     print(dune_loaded['totalStEthInDeFi'])
     grapher.process_all(dune_loaded)
-    print(f"Done Graphing. Graphs are saved in graphs/{end_date}folder")
+    print(f"Done Graphing. Graphs are saved in graphs/{end_date} folder")
     end_time = time.time()
     print(f"Time taken: {end_time - start_time} seconds")
     return
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
 
-    if (os.environ.get('DUNE_API_KEY') == None):
+    if os.environ.get("DUNE_API_KEY") is None:
         print("Please set DUNE_API_KEY environment variable")
         exit(1)
 
-    if (os.environ.get('OPENAI_API_KEY') == None):
+    if os.environ.get("OPENAI_API_KEY") is None:
         print("Please set OPENAI_API_KEY environment variable")
         exit(1)
 
     parser = argparse.ArgumentParser(description="Lido Weekly Digest Helper")
 
-    parser.add_argument('-ss', '--sol_start', type=float, required=True, help='Description for Solana Start Deposits argument')
-    parser.add_argument('-se', '--sol_end', type=float, required=True, help='Description for Solana End Deposits argument')
-    parser.add_argument('-sd', '--start_date', type=str, required=True, help='Description for start_date argument')
-    parser.add_argument('-ed', '--end_date', type=str, required=True, help='Description for end_date argument')
-    
+    parser.add_argument(
+        "-ss",
+        "--sol_start",
+        type=float,
+        required=True,
+        help="Description for Solana Start Deposits argument",
+    )
+    parser.add_argument(
+        "-se",
+        "--sol_end",
+        type=float,
+        required=True,
+        help="Description for Solana End Deposits argument",
+    )
+    parser.add_argument(
+        "-sd",
+        "--start_date",
+        type=str,
+        required=True,
+        help="Description for start_date argument in %Y-%m-%d format",
+    )
+    parser.add_argument(
+        "-ed",
+        "--end_date",
+        type=str,
+        required=True,
+        help="Description for end_date argument in %Y-%m-%d format",
+    )
 
     args = parser.parse_args()
 

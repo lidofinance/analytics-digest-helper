@@ -2,9 +2,9 @@
 name = "analytics-digest-helper"
 version = "0.1.0"
 description = ""
-authors = ["skhomuti <skhomuti@gmail.com>"]
+authors = ["skhomuti <skhomuti@gmail.com>", "Patrick Blais <pwblais@gmail.com>"]
 readme = "README.md"
-packages = [{include = "analytics_digest_helper"}]
+packages = []
 
 [tool.poetry.dependencies]
 python = "^3.9"
@@ -19,7 +19,11 @@ argparse = "^1.4.0"
 
 [tool.poetry.group.dev.dependencies]
 ipykernel = "^6.24.0"
+black = "^23.7.0"
 
 [build-system]
 requires = ["poetry-core"]
 build-backend = "poetry.core.masonry.api"
+
+[tool.black]
+line-length = 119

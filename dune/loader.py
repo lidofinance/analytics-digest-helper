@@ -6,12 +6,14 @@ import os
 import pickle
 import datetime
 
+
 def get_query_result(queries, query_name, cluster="medium"):
     query = queries[query_name]
 
     dune = DuneClient(os.environ["DUNE_API_KEY"])
     pd = dune.refresh_into_dataframe(query, performance=cluster)
     return pd
+
 
 def load(start_date: str, end_date: str, sol_start_deposits: float, sol_end_deposits: float):
     queries = get_queries(start_date, end_date, sol_start_deposits, sol_end_deposits)
