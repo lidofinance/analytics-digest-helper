@@ -27,6 +27,7 @@ def get_queries(start_date: str, end_date: str, sol_start_deposits: float, sol_e
             query_id=2404762,
             params=[
                 QueryParameter.date_type("digest_start_date", start_date),
+                QueryParameter.date_type("digest_end_date", end_date),
             ],
         ),
         "stEthToEth": Query(
@@ -52,17 +53,17 @@ def get_queries(start_date: str, end_date: str, sol_start_deposits: float, sol_e
                 QueryParameter.date_type("digest_end_date", end_date),
             ],
         ),
-        "totalStEthinDeFi": Query(
-            name="totalStEthInDeFi",
-            query_id=2698624,
+        "bridgeChange": Query(
+            name="bridgeChange",
+            query_id=2709470,
             params=[
                 QueryParameter.date_type("digest_start_date", start_date),
                 QueryParameter.date_type("digest_end_date", end_date),
             ],
         ),
-        "bridgeChange": Query(
-            name="bridgeChange",
-            query_id=2709470,
+        "totalStEthInDeFi": Query(
+            name="totalStEthInDeFi",
+            query_id=2740414,
             params=[
                 QueryParameter.date_type("digest_start_date", start_date),
                 QueryParameter.date_type("digest_end_date", end_date),
