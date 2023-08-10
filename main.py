@@ -1,18 +1,14 @@
 import argparse
 from dune.loader import load
 from dune.process import process_dune
-from llm.writer import write_thread
 from graphing.graph import Grapher
 from pathlib import Path
 import datetime
 import time
 import os
-import pickle
 from llm.blocks import BlockWriter
 from dotenv import load_dotenv
 import glob
-import zipfile
-import io
 import requests
 
 
@@ -45,11 +41,14 @@ def main(
     end_time = time.time()
     print(f"Time taken: {end_time - start_time} seconds")
 
-    print("Delivering Email")
     files = create_files(end_date)
 
-    response = requests.post(os.environ['MAKE_WEBHOOK_URL'], files=files)
-    return
+    if webhook_url := os.environ.get("MAKE_WEBHOOK_URL"):
+        print("Send result to the webhook")
+        requests.post(webhook_url, files=files)
+    else:
+        print("Webhook url is not specified, skipping...")
+
 
 def create_files(end_date):
     thread_file_path = f"threads/{end_date}/thread.md"
@@ -73,10 +72,6 @@ if __name__ == "__main__":
 
     if os.environ.get("OPENAI_API_KEY") is None:
         print("Please set OPENAI_API_KEY environment variable")
-        exit(1)
-
-    if os.environ.get("MAKE_WEBHOOK_URL") is None:
-        print("Please set MAKE_WEBHOOK_URL environment variable")
         exit(1)
 
     parser = argparse.ArgumentParser(description="Lido Weekly Digest Helper")
