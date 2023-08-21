@@ -1,6 +1,4 @@
-from dune_client.types import QueryParameter
 from dune_client.client import DuneClient
-from dune_client.query import Query
 from .queries import get_queries
 import os
 import pickle
