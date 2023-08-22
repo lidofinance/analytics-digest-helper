@@ -22,7 +22,7 @@ class Grapher:
             "dexLiquidityReserves": self.graph_dexLiquidityReserves,
         }
 
-    def graph_dexLiquidityReserves(self, df: pd.DataFrame):
+    def graph_dexLiquidityReserves(self, df: pd.DataFrame, save):
         # Set the seaborn style
         sns.set_theme()
 
@@ -50,10 +50,11 @@ class Grapher:
         table.auto_set_font_size(False)
         table.set_fontsize(10)
         table.scale(1, 1.5)
-        Path(f"graphs/{self.end_date}").mkdir(parents=True, exist_ok=True)
-        fig.savefig(f"graphs/{self.end_date}/dexLiquidityReserves.png")
+        if save:
+            Path(f"graphs/{self.end_date}").mkdir(parents=True, exist_ok=True)
+            fig.savefig(f"graphs/{self.end_date}/dexLiquidityReserves.png")
 
-    def graph_totalStEthInDeFi(self, df: pd.DataFrame):
+    def graph_totalStEthInDeFi(self, df: pd.DataFrame, save):
         # Convert time column to datetime format and set it as the index
         df["time"] = pd.to_datetime(df["time"])
         df.set_index("time", inplace=True)
@@ -75,10 +76,11 @@ class Grapher:
         ax.set_xlabel("Date")
         ax.set_ylabel("stETH DeFi Share")
 
-        Path(f"graphs/{self.end_date}").mkdir(parents=True, exist_ok=True)
-        plt.savefig(f"graphs/{self.end_date}/totalStEthInDeFi.png")
+        if save:
+            Path(f"graphs/{self.end_date}").mkdir(parents=True, exist_ok=True)
+            plt.savefig(f"graphs/{self.end_date}/totalStEthInDeFi.png")
 
-    def graph_tvl(self, df: pd.DataFrame):
+    def graph_tvl(self, df: pd.DataFrame, save):
         df = df.reset_index(drop=True)
 
         # Replace NaN values with an empty string
@@ -99,10 +101,11 @@ class Grapher:
         table.set_fontsize(10)
         table.scale(1, 1.5)
 
-        Path(f"graphs/{self.end_date}").mkdir(parents=True, exist_ok=True)
-        fig.savefig(f"graphs/{self.end_date}/tvl.png")
+        if save:
+            Path(f"graphs/{self.end_date}").mkdir(parents=True, exist_ok=True)
+            fig.savefig(f"graphs/{self.end_date}/tvl.png")
 
-    def graph_stETHApr(self, df: pd.DataFrame):
+    def graph_stETHApr(self, df: pd.DataFrame, save):
         plt.clf()
         # Ensure that 'time' column is in datetime format
         df["time"] = pd.to_datetime(df["time"])
@@ -127,11 +130,12 @@ class Grapher:
         # Display the legend
         ax.legend()
 
-        # Save the plot to a file in graphs/<end_date> folder. make the folder if it doesn't exist.
-        Path(f"graphs/{self.end_date}").mkdir(parents=True, exist_ok=True)
-        fig.savefig(f"graphs/{self.end_date}/stakingAPR.png")
+        if save:
+            # Save the plot to a file in graphs/<end_date> folder. make the folder if it doesn't exist.
+            Path(f"graphs/{self.end_date}").mkdir(parents=True, exist_ok=True)
+            fig.savefig(f"graphs/{self.end_date}/stakingAPR.png")
 
-    def graph_stEthToEth(self, df: pd.DataFrame):
+    def graph_stEthToEth(self, df: pd.DataFrame, save):
         # Convert 'time' column to datetime if it's not already
         if df["time"].dtype == "O":
             df["time"] = pd.to_datetime(df["time"])
@@ -154,11 +158,12 @@ class Grapher:
         # Rotate x-axis labels for better readability
         plt.xticks(rotation=45)
 
-        # Save the plot to a file in graphs/<end_date> folder. make the folder if it doesn't exist.
-        Path(f"graphs/{self.end_date}").mkdir(parents=True, exist_ok=True)
-        fig.savefig(f"graphs/{self.end_date}/stEthToEth.png")
+        if save:
+            # Save the plot to a file in graphs/<end_date> folder. make the folder if it doesn't exist.
+            Path(f"graphs/{self.end_date}").mkdir(parents=True, exist_ok=True)
+            fig.savefig(f"graphs/{self.end_date}/stEthToEth.png")
 
-    def graph_netDepositGrowthLeaders(self, df: pd.DataFrame):
+    def graph_netDepositGrowthLeaders(self, df: pd.DataFrame, save):
         plt.clf()
         fig, ax = plt.subplots(figsize=(12, 6))
 
@@ -169,11 +174,12 @@ class Grapher:
         ax.set(xlabel="ETH Deposits Growth", ylabel="Protocol")
         ax.set_title("ETH Deposits Growth Leaders")
 
-        # Save the plot to a file in graphs/<end_date> folder. make the folder if it doesn't exist.
-        Path(f"graphs/{self.end_date}").mkdir(parents=True, exist_ok=True)
-        fig.savefig(f"graphs/{self.end_date}/eth_deposits_growth.png")
+        if save:
+            # Save the plot to a file in graphs/<end_date> folder. make the folder if it doesn't exist.
+            Path(f"graphs/{self.end_date}").mkdir(parents=True, exist_ok=True)
+            fig.savefig(f"graphs/{self.end_date}/eth_deposits_growth.png")
 
-    def graph_stEthOnL2Bridges(self, df: pd.DataFrame):
+    def graph_stEthOnL2Bridges(self, df: pd.DataFrame, save):
         # Convert the 'day' column to datetime format
         df["day"] = pd.to_datetime(df["day"])
 
@@ -217,10 +223,11 @@ class Grapher:
         # Rotate date labels slightly
         plt.xticks(rotation=30)
 
-        Path(f"graphs/{self.end_date}").mkdir(parents=True, exist_ok=True)
-        fig.savefig(f"graphs/{self.end_date}/stEthOnL2Bridges.png")
+        if save:
+            Path(f"graphs/{self.end_date}").mkdir(parents=True, exist_ok=True)
+            fig.savefig(f"graphs/{self.end_date}/stEthOnL2Bridges.png")
 
-    def process_all(self, dune_dataframes: dict[str, pd.DataFrame]):
+    def process_all(self, dune_dataframes: dict[str, pd.DataFrame], save: bool):
         # for k, v in dune_dataframes.items():
         #     if k in self.graphing_functions.keys() and self.graphing_functions[k] is not None:
         #         self.graphing_functions[k](v)
@@ -228,4 +235,4 @@ class Grapher:
             graph_func = self.graphing_functions.get(df_name)
             if graph_func is not None:
                 print(df_name)
-                graph_func(df)
+                graph_func(df, save)

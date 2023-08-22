@@ -17,9 +17,10 @@ def main(
     end_date: datetime.datetime,
     sol_start_deposits: float,
     sol_end_deposits: float,
+    save: bool,
 ):
     start_time = time.time()  # start timing
-    dune_loaded = load(str(start_date), str(end_date), sol_start_deposits, sol_end_deposits)
+    dune_loaded = load(str(start_date), str(end_date), sol_start_deposits, sol_end_deposits, save)
     # dune_loaded = pickle.load(open('data/dune_data_2023-08-07_11-36.pkl', 'rb'))
     processed = process_dune(dune_loaded)
 
@@ -27,16 +28,17 @@ def main(
     thread = writer.compose_thread(processed)
     print(thread)
 
-    print("Writing thread to file")
-    Path(f"threads/{str(end_date)}").mkdir(parents=True, exist_ok=True)
-    with open(f"threads/{str(end_date)}/thread.md", "w") as f:
-        f.write(thread)
-    print(f"Wrote thread to file in threads/{end_date}/thread.md")
+    if save:
+        print("Writing thread to file")
+        Path(f"threads/{str(end_date)}").mkdir(parents=True, exist_ok=True)
+        with open(f"threads/{str(end_date)}/thread.md", "w") as f:
+            f.write(thread)
+        print(f"Wrote thread to file in threads/{end_date}/thread.md")
 
     print("Graphing")
     grapher = Grapher(str(end_date))
     print(dune_loaded["totalStEthInDeFi"])
-    grapher.process_all(dune_loaded)
+    grapher.process_all(dune_loaded, save)
     print(f"Done Graphing. Graphs are saved in graphs/{end_date} folder")
     end_time = time.time()
     print(f"Time taken: {end_time - start_time} seconds")
@@ -89,6 +91,7 @@ if __name__ == "__main__":
         required=False,
         help="Description for end_date argument in %Y-%m-%d format",
     )
+    parser.add_argument("-save", "--save", type=bool, default=False, required=False, help="Save the data")
 
     args = parser.parse_args()
 
@@ -106,4 +109,4 @@ if __name__ == "__main__":
     print(f"start_date: {str(start_date)}")
     print(f"end_date: {str(end_date)}")
 
-    main(start_date, end_date, 0, 0)
+    main(start_date, end_date, 0, 0, args.save)
