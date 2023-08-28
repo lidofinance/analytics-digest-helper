@@ -319,7 +319,12 @@ Total amount of (w)stETH deposited to DeFi pools hit 3.03m stETH (7d: +0.78%) wh
 
 This estimation takes into account all major L1/L2 lending & liquidity pools.
 ---
+🌊 stETH in DeFi
 
+DeFi pools collectively hold a total of 3.16 M (w)stETH, constituting 38.46% of the overall stETH supply (7d: -3.4 percentage points (pp) in share)
+
+This estimation takes into account all major L1/L2 lending & liquidity pools.
+---
 Use your knowledge of Lido, the data provided by your boss, and the examples above to write a section of the thread about the total amount of stETH in DeFi.
 """
 

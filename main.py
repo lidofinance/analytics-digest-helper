@@ -10,6 +10,7 @@ from llm.blocks import BlockWriter
 from dotenv import load_dotenv
 import glob
 import requests
+import pickle
 
 
 def main(
@@ -17,33 +18,34 @@ def main(
     end_date: datetime.datetime,
     sol_start_deposits: float,
     sol_end_deposits: float,
-    save: bool,
 ):
     start_time = time.time()  # start timing
-    dune_loaded = load(str(start_date), str(end_date), sol_start_deposits, sol_end_deposits, save)
-    # dune_loaded = pickle.load(open('data/dune_data_2023-08-07_11-36.pkl', 'rb'))
+    # dune_loaded = load(str(start_date), str(end_date), sol_start_deposits, sol_end_deposits, save)
+    dune_loaded = pickle.load(open('data/dune_data_2023-08-28_12-42.pkl', 'rb'))
     processed = process_dune(dune_loaded)
 
     writer = BlockWriter(str(end_date), str(start_date))
     thread = writer.compose_thread(processed)
     print(thread)
 
-    if save:
-        print("Writing thread to file")
-        Path(f"threads/{str(end_date)}").mkdir(parents=True, exist_ok=True)
-        with open(f"threads/{str(end_date)}/thread.md", "w") as f:
-            f.write(thread)
-        print(f"Wrote thread to file in threads/{end_date}/thread.md")
+    save_location = f"/tmp/digest/{end_date}"
+    Path(f"{save_location}").mkdir(parents=True, exist_ok=True)
+
+    print("Writing thread to file")
+    Path(f"threads/{str(end_date)}").mkdir(parents=True, exist_ok=True)
+    with open(f"{save_location}/thread.md", "w") as f:
+        f.write(thread)
+    print(f"Wrote thread to file in {save_location}/thread.md")
 
     print("Graphing")
     grapher = Grapher(str(end_date))
     print(dune_loaded["totalStEthInDeFi"])
-    grapher.process_all(dune_loaded, save)
-    print(f"Done Graphing. Graphs are saved in graphs/{end_date} folder")
+    grapher.process_all(dune_loaded)
+    print(f"Done Graphing. Graphs are saved in {save_location}/graphs folder")
     end_time = time.time()
     print(f"Time taken: {end_time - start_time} seconds")
 
-    files = create_files(end_date)
+    files = create_files(end_date, save_location)
 
     if webhook_url := os.environ.get("MAKE_WEBHOOK_URL"):
         print("Send result to the webhook")
@@ -52,9 +54,9 @@ def main(
         print("Webhook url is not specified, skipping...")
 
 
-def create_files(end_date):
-    thread_file_path = f"threads/{end_date}/thread.md"
-    graph_files_paths = glob.glob(f"graphs/{end_date}/*")
+def create_files(end_date, save_location):
+    thread_file_path = f"{save_location}/thread.md"
+    graph_files_paths = glob.glob(f"{save_location}/graphs/*")
 
     # Adding the thread.md file
     files = {'thread': (os.path.basename(thread_file_path), open(thread_file_path, 'rb'), 'text/markdown')}
@@ -91,8 +93,6 @@ if __name__ == "__main__":
         required=False,
         help="Description for end_date argument in %Y-%m-%d format",
     )
-    parser.add_argument("-save", "--save", type=bool, default=False, required=False, help="Save the data")
-
     args = parser.parse_args()
 
     # convert start date and ed to datetime objects
@@ -109,4 +109,4 @@ if __name__ == "__main__":
     print(f"start_date: {str(start_date)}")
     print(f"end_date: {str(end_date)}")
 
-    main(start_date, end_date, 0, 0, args.save)
+    main(start_date, end_date, 0, 0)

@@ -105,6 +105,10 @@ def process_dexLiquidityReserves(df: pd.DataFrame) -> str:
 
 
 def process_totalStEthInDeFi(df: pd.DataFrame) -> str:
+
+    # Order the dataframe from oldest to latest
+    df = df.sort_values("time")    
+
     # Calculate the changes
     liquidity_pools_diff = df["liquidity_pools"].diff().dropna()
     lending_pools_diff = df["lending_pools"].diff().dropna()
@@ -131,6 +135,9 @@ def process_totalStEthInDeFi(df: pd.DataFrame) -> str:
         (df["stETH_in_DeFi"].iloc[-1] - df["stETH_in_DeFi"].iloc[0]) / df["stETH_in_DeFi"].iloc[0] * 100
     )
 
+    # Get the final (most recent) value of stETH in DeFi
+    final_stETH_in_DeFi = df["stETH_in_DeFi"].iloc[-1]
+
     # Format the changes into a string
     result = f"""
     Liquidity Pools:
@@ -144,6 +151,7 @@ def process_totalStEthInDeFi(df: pd.DataFrame) -> str:
     Total stETH in DeFi:
     Absolute change: {total_stETH_in_DeFi_change}
     Percentage change: {total_stETH_in_DeFi_pct_change}%
+    Final value: {final_stETH_in_DeFi}
     """
 
     return result
@@ -189,19 +197,13 @@ def process_stEthOnL2(df: pd.DataFrame) -> str:
 
 
 def process_bridgeChange(df):
-    # Get the period changes for each bridge type
-    total_change = round(df.loc[df["bridge"] == "total", "period_change"].values[0], 2)
-    arbitrum_change = round(df.loc[df["bridge"] == "Arbitrum Bridges", "period_change"].values[0], 2)
-    optimism_change = round(df.loc[df["bridge"] == "Optimism Bridges", "period_change"].values[0], 2)
-    polygon_change = round(df.loc[df["bridge"] == "Polygon Bridges", "period_change"].values[0], 2)
+    # Apply rounding logic to the 'period_change' column
+    df['period_change'] = df['period_change'].apply(lambda x: round(x, 2))
 
-    # Format and return the message
-    return (
-        f"Total period change: {total_change}. "
-        f"Arbitrum Bridge Change: {arbitrum_change}. "
-        f"Optimism Bridge Change: {optimism_change}. "
-        f"Polygon Bridge Change: {polygon_change}"
-    )
+    # Convert the DataFrame to a string
+    df_string = df.to_string(index=False)
+
+    return df_string
 
 
 # Define a dictionary mapping the DataFrame names to their respective processing functions

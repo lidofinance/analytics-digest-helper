@@ -25,7 +25,7 @@ class BlockWriter:
             "netDepositGrowthLeaders": self.write_netDepositGrowthLeaders,
             "stEthToEth": self.write_stEthToEth,
             "dexLiquidityReserves": self.write_dexLiquidityReserves,
-            "stEthOnL2Bridges": self.write_stEthOnL2Bridges,
+            "bridgeChange": self.write_bridgeChange,
             "totalStEthInDeFi": self.write_totalStEthInDeFi,
         }
 
@@ -58,11 +58,11 @@ class BlockWriter:
         print(processed)
         return self.write_block(processed, dexLiquidityReserves_prompt)
 
-    def write_stEthOnL2Bridges(self, processed_bridges, processed_bridge_change):
+    def write_bridgeChange(self, processed_bridge_change):
         """
         Processed here is the text input for both stEthOnL2Bridges and bridgeChange
         """
-        return self.write_block(processed_bridges + "\n" + processed_bridge_change, stEthOnL2Bridges_prompt)
+        return self.write_block(processed_bridge_change, stEthOnL2Bridges_prompt)
 
     def write_totalStEthInDeFi(self, processed):
         print(processed)
@@ -74,11 +74,8 @@ class BlockWriter:
         processed_data = ""
 
         for k, v in processed.items():
-            if k == "stEthOnL2Bridges":
-                processed_data += self.write_stEthOnL2Bridges(v, processed["bridgeChange"])
-            elif k == "bridgeChange":
-                continue
-            else:
+                if self.write_functions.get(k) is None:
+                    continue
                 block = self.write_functions[k](v)
                 print(block)
                 processed_data += block + "\n\n"
