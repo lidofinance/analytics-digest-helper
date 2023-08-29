@@ -246,9 +246,20 @@ class Grapher:
         if df["time"].dtype == "O":
             df["time"] = pd.to_datetime(df["time"])
 
-        # Filter out weight_avg_price < 0.7
-        df = df[df["weight_avg_price"] >= 0.7]
-        
+        # Correct anomalies in weight_avg_price
+        def correct_anomalies(y_values):
+            corrected = np.copy(y_values)
+            for i in range(1, len(y_values) - 1):
+                prev_val = y_values[i - 1]
+                curr_val = y_values[i]
+                next_val = y_values[i + 1]
+
+                if curr_val < 0.7 * prev_val and curr_val < 0.7 * next_val:
+                    corrected[i] = (prev_val + next_val) / 2.0
+
+            return corrected
+
+        df["weight_avg_price"] = correct_anomalies(df["weight_avg_price"])
 
         # Create a plot
         fig, ax = plt.subplots(figsize=(12, 6))
