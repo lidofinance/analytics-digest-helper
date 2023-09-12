@@ -17,19 +17,16 @@ def get_query_result(queries, query_name, cluster="medium"):
             return pd
         except:
             attempts += 1
+            print(f"Failed to get query result for {query_name} on attempt {attempts}")
             time.sleep(2)  # wait for 2 seconds before trying again
-    if attempts == 3:
-        raise Exception("Failed to get query result after 3 attempts")
-    return None
-
+    raise Exception(f"Failed to get query {query_name} result after 3 attempts")
 
 def load(start_date: str, end_date: str, sol_start_deposits: float, sol_end_deposits: float):
     queries = get_queries(start_date, end_date, sol_start_deposits, sol_end_deposits)
     dfs = {}
     for query_name in queries.keys():
         result = get_query_result(queries, query_name, cluster="large")
-        if result is not None:
-            dfs[query_name] = result
+        dfs[query_name] = result
 
     # now = datetime.datetime.now().strftime("%Y-%m-%d_%H-%M")
     # file_name = f"data/dune_data_{now}.pkl"
