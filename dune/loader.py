@@ -15,9 +15,9 @@ def get_query_result(queries, query_name, cluster="medium"):
         try:
             pd = dune.refresh_into_dataframe(query, performance=cluster)
             return pd
-        except:
+        except Exception as err:
             attempts += 1
-            print(f"Failed to get query result for {query_name} on attempt {attempts}")
+            print(f"Failed to get query result for {query_name} on attempt {attempts}\n{err}")
             time.sleep(2)  # wait for 2 seconds before trying again
     raise Exception(f"Failed to get query {query_name} result after 3 attempts")
 
