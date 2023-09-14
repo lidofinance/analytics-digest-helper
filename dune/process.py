@@ -138,6 +138,9 @@ def process_totalStEthInDeFi(df: pd.DataFrame) -> str:
     # Get the final (most recent) value of stETH in DeFi
     final_stETH_in_DeFi = df["stETH_in_DeFi"].iloc[-1]
 
+    # Get the final (most recent) percentage of stETH_DeFi_share
+    final_stETH_DeFi_share = df["stETH_DeFi_share"].iloc[-1]
+
     # Format the changes into a string
     result = f"""
     Liquidity Pools:
@@ -152,6 +155,8 @@ def process_totalStEthInDeFi(df: pd.DataFrame) -> str:
     Absolute change: {total_stETH_in_DeFi_change}
     Percentage change: {total_stETH_in_DeFi_pct_change}%
     Final value: {final_stETH_in_DeFi}
+
+    Percentage of stETH in DeFi: {final_stETH_DeFi_share:.2f}%
     """
 
     return result

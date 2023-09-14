@@ -21,6 +21,7 @@ def main(
 ):
     start_time = time.time()  # start timing
     dune_loaded = load(str(start_date), str(end_date), sol_start_deposits, sol_end_deposits)
+    # pickle.dump(dune_loaded, open(f'data/dune_data_{str(end_date)}.pkl', 'wb'))
     # dune_loaded = pickle.load(open('data/dune_data_2023-08-28_12-42.pkl', 'rb'))
     processed = process_dune(dune_loaded)
 
