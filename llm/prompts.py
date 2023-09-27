@@ -27,7 +27,7 @@ Lido TVL continued its growth to a new peak at $14.75b (7d: +3.84%) as a result 
 3/
 ⚡️ Lido on Ethereum
 
-Lido led in net new deposits to the Ethereum Beacon Chain (new gross deposits - principal withdrawals) - 132.8k ETH in 7 days.
+Lido led in net new deposits to the Ethereum Beacon Chain (new gross deposits - principal withdrawals) - 133k ETH in 7 days.
 
 
 
@@ -100,8 +100,8 @@ wstETH on L2 surpassed 100,000 wstETH: currently 106,046 wstETH (7d: +8.54%)
 2/
 ⚡️Lido TVL
 
-Despite deposit growth on both Ethereum and Polygon, total TVL decreased slightly - to $12.6b (7d: -0.78%) - due to token price volatility.
-
+Despite deposit growth on both Ethereum and Polygon, total TVL decreased - to $12.6b (7d: -0.78%) - due to token price volatility.
+Driven by a decrease in Ethereum and Polygon token prices, Lido TVL fell 0.78% to $12.6b.
 
 
 3/
@@ -239,6 +239,8 @@ TVL at the end of the week - $14.94b.
 ---
 
 Use your knowledge of Lido, the data provided by your boss, and the examples above to write a section of the thread about Lido's TVL data this week.
+
+Increases and decreases of less than a percent are "slight", but you should use more emphatic words for larger changes.
 """
 
 netDepositGrowthLeaders_prompt = """
@@ -247,11 +249,11 @@ Today, you are responsible for writing the section of the thread about the top p
 ---
 ⚡️ Lido on Ethereum
 
-Lido was at 1st place in net new deposits to the Ethereum Beacon Chain, with 116.9k ETH attracted in 7d.
+Lido was at 1st place in net new deposits to the Ethereum Beacon Chain, with 116,945 ETH attracted in 7d.
 ---
 ⚡️ Lido on Ethereum
 
-Lido took the 2nd place - after Abyss Finance - in net new deposits to the Ethereum Beacon Chain, with 65.9k ETH attracted in 7d.
+Lido took the 2nd place - after Abyss Finance - in net new deposits to the Ethereum Beacon Chain, with 65,943 ETH attracted in 7d.
 ---
 
 Use your knowledge of Lido, the data provided by your boss, and the examples above to write a section of the thread about Lido's standing in the list of top protocols in net new deposits on the Ethereum Beacon Chain.
