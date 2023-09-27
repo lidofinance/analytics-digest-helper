@@ -59,9 +59,6 @@ class BlockWriter:
         return self.write_block(processed, dexLiquidityReserves_prompt)
 
     def write_bridgeChange(self, processed_bridge_change):
-        """
-        Processed here is the text input for both stEthOnL2Bridges and bridgeChange
-        """
         return self.write_block(processed_bridge_change, stEthOnL2Bridges_prompt)
 
     def write_totalStEthInDeFi(self, processed):
