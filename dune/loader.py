@@ -28,10 +28,10 @@ def load(start_date: str, end_date: str, sol_start_deposits: float, sol_end_depo
         result = get_query_result(queries, query_name, cluster="large")
         dfs[query_name] = result
 
-    now = datetime.datetime.now().strftime("%Y-%m-%d_%H-%M")
-    file_name = f"data/dune_data_{now}.pkl"
-    with open(file_name, "wb") as f:
-        pickle.dump(dfs, f)
+    # now = datetime.datetime.now().strftime("%Y-%m-%d_%H-%M")
+    # file_name = f"data/dune_data_{now}.pkl"
+    # with open(file_name, "wb") as f:
+    #     pickle.dump(dfs, f)
 
     return dfs
 
