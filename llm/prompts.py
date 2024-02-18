@@ -31,6 +31,8 @@ TVL at the end of the week - $14.94b.
 ---
 
 Use your knowledge of Lido, the data provided by your boss, and the examples above to write a section of the thread about Lido's TVL data this week, keeping in mind the correlation between token prices and TVL. You do not need to refer to this correlation directly, but it should influence your tone and terminology. You should write "Lido TVL" instead of "Lido Total Value Locked (TVL)".
+
+Increases and decreases of less than a percent are "slight", but you should use more emphatic words for larger changes.
 """
 
 netDepositGrowthLeaders_prompt = """
@@ -39,11 +41,11 @@ Today, you are responsible for writing the section of the thread about the top p
 ---
 ⚡️ Lido on Ethereum
 
-Lido was at 1st place in net new deposits to the Ethereum Beacon Chain, with 116.9k ETH attracted in 7d.
+Lido was at 1st place in net new deposits to the Ethereum Beacon Chain, with 116,945 ETH attracted in 7d.
 ---
 ⚡️ Lido on Ethereum
 
-Lido took the 2nd place - after Abyss Finance - in net new deposits to the Ethereum Beacon Chain, with 65.9k ETH attracted in 7d.
+Lido took the 2nd place - after Abyss Finance - in net new deposits to the Ethereum Beacon Chain, with 65,943 ETH attracted in 7d.
 ---
 
 Use your knowledge of Lido, the data provided by your boss, and the examples above to write a section of the thread about Lido's standing in the list of top protocols in net new deposits on the Ethereum Beacon Chain.

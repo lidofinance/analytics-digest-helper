@@ -2,12 +2,12 @@ import pandas as pd
 import matplotlib.pyplot as plt
 import seaborn as sns
 import matplotlib.ticker as mtick
-import matplotlib.ticker as ticker
 import matplotlib.dates as mdates
 from pathlib import Path
 from datetime import datetime
 from matplotlib.dates import DateFormatter
 import numpy as np
+import os
 
 
 class Grapher:
@@ -60,7 +60,8 @@ class Grapher:
                 cell.set_fontsize(14)
                 cell.set_facecolor('gray')
 
-        fig.savefig(f"{self.graph_location}/dexLiquidityReserves.png")
+        
+        self.save_figure(fig, "dexLiquidityReserves")
 
     def graph_totalStEthInDeFi(self, df: pd.DataFrame):
 
@@ -86,7 +87,7 @@ class Grapher:
         ax.set_xlabel("")
         ax.set_ylabel("")
 
-        plt.savefig(f"{self.graph_location}/totalStEthInDeFi.png")
+        self.save_figure(fig, "totalStEthInDeFi")
 
         def extract_relevant_data(df):
             """
@@ -146,8 +147,7 @@ class Grapher:
                     cell.set_fontsize(14)
                     cell.set_facecolor('gray')
             
-            # Save the table as an image
-            fig.savefig(f"{self.graph_location}/totalStEthInDeFi_table.png")
+            self.save_figure(fig, "totalStEthInDeFi_table")
 
         extracted_data = extract_relevant_data(original_df.copy())
 
@@ -198,7 +198,7 @@ class Grapher:
                 cell.set_fontsize(14)
                 cell.set_facecolor('gray')
 
-        fig.savefig(f"{self.graph_location}/tvl.png")
+        self.save_figure(fig, "tvl")
 
     def graph_stETHApr(self, df: pd.DataFrame):
         plt.clf()
@@ -239,7 +239,7 @@ class Grapher:
                     va='bottom',
                     color='black',
                     zorder=10)
-        fig.savefig(f"{self.graph_location}/stakingAPR.png")
+        self.save_figure(fig, "stakingAPR")
 
     def graph_stEthToEth(self, df: pd.DataFrame):
         # Convert 'time' column to datetime if it's not already
@@ -279,7 +279,7 @@ class Grapher:
         # Rotate x-axis labels for better readability
         plt.xticks(rotation=45)
 
-        fig.savefig(f"{self.graph_location}/stEthToEth.png")
+        self.save_figure(fig, "stEthToEth")
 
     def graph_netDepositGrowthLeaders(self, df: pd.DataFrame):
         plt.clf()
@@ -313,7 +313,7 @@ class Grapher:
                           size=15, xytext = (20, 0),
                           textcoords = 'offset points')
 
-        fig.savefig(f"{self.graph_location}/eth_deposits_growth.png")
+        self.save_figure(fig, "eth_deposits_growth")
 
     def graph_stEthOnL2Bridges(self, df: pd.DataFrame):
         # Convert the 'day' column to datetime format
@@ -356,16 +356,25 @@ class Grapher:
         ax.legend(loc="upper left")
 
         # Set the date formatter for the x-axis
-        ax.xaxis.set_major_formatter(ticker.FuncFormatter(format_date))
+        ax.xaxis.set_major_formatter(mtick.FuncFormatter(format_date))
 
         # Rotate date labels slightly
         plt.xticks(rotation=30)
 
-        fig.savefig(f"{self.graph_location}/stEthOnL2Bridges.png")
+        self.save_figure(fig, "stEthOnL2Bridges")
 
     def process_all(self, dune_dataframes: dict[str, pd.DataFrame]):
         for df_name, df in dune_dataframes.items():
             graph_func = self.graphing_functions.get(df_name)
-            if graph_func is not None:
-                print(df_name)
+            if graph_func is None:
+                print(f"No graphing function for {df_name}")
+            else:
+                print("Graphing " + df_name)
                 graph_func(df)
+
+    def save_figure(self, fig, name):
+        fig.savefig(f"{self.graph_location}/{name}.png")
+        if os.path.exists(f"{self.graph_location}/{name}.png"):
+            print(f"Graph {name} saved successfully.")
+        else:
+            print(f"Failed to save the graph {name}")

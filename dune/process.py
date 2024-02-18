@@ -48,7 +48,7 @@ def process_netDepositGrowthLeaders(df: pd.DataFrame) -> str:
     if lido_stats.empty:
         return ""
 
-    lido_net_deposit_growth = round(lido_stats.iloc[0]["eth_deposits_growth"], 2)
+    lido_net_deposit_growth = round(lido_stats.iloc[0]["eth_deposits_growth"], 0)
     lido_rank = lido_stats.iloc[0]["rank"]
 
     return f"Lido had net deposit growth of {lido_net_deposit_growth} ETH. ETH Growth Leaderboard rank: {lido_rank}"
@@ -58,11 +58,8 @@ def process_stETHApr(df: pd.DataFrame) -> str:
     # Get the most recent 7d moving average
     recent_7d_ma = df["stakingAPR_ma_7"].values[0]
 
-    # Convert the value to percentage and format it with 2 decimal places
-    recent_7d_ma_percentage = "{:.2%}".format(recent_7d_ma)
-
     # Format the result into a string
-    result_string = f"7d MA: {recent_7d_ma_percentage}"
+    result_string = f"7d MA: {recent_7d_ma:.2%}"
 
     return result_string
 
@@ -93,7 +90,7 @@ def process_dexLiquidityReserves(df: pd.DataFrame) -> str:
     period_change = total_row["period_change"].values[0]
 
     # Format the end value into a string in billions with 2 decimal places
-    end_value_str = f"${end_value / 1e9:.2f}b"
+    end_value_str = f"${end_value / 1e9:.0f}b"
 
     # Format the period change into a string as a percentage with 2 decimal places
     period_change_str = f"{period_change * 100:.2f}%"
@@ -114,11 +111,6 @@ def process_totalStEthInDeFi(df: pd.DataFrame) -> str:
     lending_pools_diff = df["lending_pools"].diff().dropna()
     stETH_in_DeFi_diff = df["stETH_in_DeFi"].diff().dropna()
 
-    # Calculate the percentage changes
-    liquidity_pools_pct_change = df["liquidity_pools"].pct_change().dropna() * 100
-    lending_pools_pct_change = df["lending_pools"].pct_change().dropna() * 100
-    stETH_in_DeFi_pct_change = df["stETH_in_DeFi"].pct_change().dropna() * 100
-
     # Get the total changes
     total_liquidity_pools_change = liquidity_pools_diff.sum()
     total_lending_pools_change = lending_pools_diff.sum()
@@ -138,20 +130,25 @@ def process_totalStEthInDeFi(df: pd.DataFrame) -> str:
     # Get the final (most recent) value of stETH in DeFi
     final_stETH_in_DeFi = df["stETH_in_DeFi"].iloc[-1]
 
+    # Get the final (most recent) percentage of stETH_DeFi_share
+    final_stETH_DeFi_share = df["stETH_DeFi_share"].iloc[-1]
+
     # Format the changes into a string
     result = f"""
     Liquidity Pools:
-    Absolute change: {total_liquidity_pools_change}
-    Percentage change: {total_liquidity_pools_pct_change}%
+    Absolute change: {total_liquidity_pools_change:.0f}
+    Percentage change: {total_liquidity_pools_pct_change:.2f}%
 
     Lending Pools:
-    Absolute change: {total_lending_pools_change}
-    Percentage change: {total_lending_pools_pct_change}%
+    Absolute change: {total_lending_pools_change:.0f}
+    Percentage change: {total_lending_pools_pct_change:.2f}%
 
     Total stETH in DeFi:
-    Absolute change: {total_stETH_in_DeFi_change}
-    Percentage change: {total_stETH_in_DeFi_pct_change}%
-    Final value: {final_stETH_in_DeFi}
+    Absolute change: {total_stETH_in_DeFi_change:.0f}
+    Percentage change: {total_stETH_in_DeFi_pct_change:.2f}%
+    Final value: {final_stETH_in_DeFi:.0f}
+
+    Percentage of stETH in DeFi: {final_stETH_DeFi_share:.2f}%
     """
 
     return result
@@ -166,7 +163,7 @@ def process_stEthOnL2(df: pd.DataFrame) -> str:
     total_period_change = total_row["period_change"].values[0]
 
     # Format the total end amount and total period change into strings
-    total_end_amount_str = f"{total_end_amount:.0f} wstETH"
+    total_end_amount_str = f"{round(total_end_amount, 0)} wstETH"
     total_period_change_str = f"{total_period_change:.2f}%"
 
     # Initialize an empty string to store the individual bridge data
@@ -199,6 +196,8 @@ def process_stEthOnL2(df: pd.DataFrame) -> str:
 def process_bridgeChange(df):
     # Apply rounding logic to the 'period_change' column
     df['period_change'] = df['period_change'].apply(lambda x: round(x, 2))
+    df['end_amount'] = df['end_amount'].apply(lambda x: int(round(x, 0)))
+    df['start_amount'] = df['start_amount'].apply(lambda x: int(round(x, 0)))
 
     # Convert the DataFrame to a string
     df_string = df.to_string(index=False)

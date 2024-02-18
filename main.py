@@ -9,9 +9,8 @@ import os
 from llm.blocks import BlockWriter
 from dotenv import load_dotenv
 import glob
-import requests
 import pickle
-
+import requests
 
 def main(
     start_date: datetime.datetime,
@@ -32,20 +31,20 @@ def main(
     Path(f"{save_location}").mkdir(parents=True, exist_ok=True)
 
     print("Writing thread to file")
-    Path(f"threads/{str(end_date)}").mkdir(parents=True, exist_ok=True)
     with open(f"{save_location}/thread.md", "w") as f:
         f.write(thread)
     print(f"Wrote thread to file in {save_location}/thread.md")
 
     print("Graphing")
     grapher = Grapher(str(end_date))
-    print(dune_loaded["totalStEthInDeFi"])
     grapher.process_all(dune_loaded)
     print(f"Done Graphing. Graphs are saved in {save_location}/graphs folder")
     end_time = time.time()
     print(f"Time taken: {end_time - start_time} seconds")
 
     files = create_files(end_date, save_location)
+
+    print(files)
 
     if webhook_url := os.environ.get("MAKE_WEBHOOK_URL"):
         print("Send result to the webhook")
