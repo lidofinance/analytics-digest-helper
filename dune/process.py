@@ -211,7 +211,7 @@ process_functions = {
     "netDepositGrowthLeaders": process_netDepositGrowthLeaders,
     "stETHApr": process_stETHApr,
     "stEthToEth": process_stEthToEth,
-    "dexLiquidityReserves": process_dexLiquidityReserves,
+    # "dexLiquidityReserves": process_dexLiquidityReserves,
     "bridgeChange": process_bridgeChange,
     "totalStEthInDeFi": process_totalStEthInDeFi,
 }

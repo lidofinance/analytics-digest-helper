@@ -20,8 +20,7 @@ def main(
 ):
     start_time = time.time()  # start timing
     dune_loaded = load(str(start_date), str(end_date), sol_start_deposits, sol_end_deposits)
-    # pickle.dump(dune_loaded, open(f'data/dune_data_{str(end_date)}.pkl', 'wb'))
-    # dune_loaded = pickle.load(open('data/dune_data_2023-09-25 00:00:00.pkl', 'rb'))
+    # dune_loaded = pickle.load(open('data/dune_data_2024-02-18_13-23.pkl', 'rb'))
     processed = process_dune(dune_loaded)
 
     writer = BlockWriter(str(end_date), str(start_date))

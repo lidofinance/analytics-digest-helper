@@ -20,7 +20,7 @@ class Grapher:
             "stEthToEth": self.graph_stEthToEth,
             "tvl": self.graph_tvl,
             "totalStEthInDeFi": self.graph_totalStEthInDeFi,
-            "dexLiquidityReserves": self.graph_dexLiquidityReserves,
+            # "dexLiquidityReserves": self.graph_dexLiquidityReserves,
         }
         self.graph_location = f"/tmp/digest/{end_date}/graphs"
         Path(self.graph_location).mkdir(parents=True, exist_ok=True)
@@ -167,13 +167,13 @@ class Grapher:
         # Format the values in the table
         for col in df.columns:
             if "change" in col.lower():
-                df[col] = pd.to_numeric(df[col], errors='coerce').apply(lambda x: "" if pd.isnull(x) else "{:.2f}%".format(x * 100))
+                df[col] = pd.to_numeric(df[col], errors='coerce').apply(lambda x: "" if pd.isnull(x) else "{:.0f}%".format(x * 100))  # Rounded to no decimals
             elif col == "Tokens deposited":
-                df[col] = pd.to_numeric(df[col], errors='coerce').apply(lambda x: "" if pd.isnull(x) else "{:,.0f}".format(x)) # Express in whole numbers with comma separators
+                df[col] = pd.to_numeric(df[col], errors='coerce').apply(lambda x: "" if pd.isnull(x) else "{:,.0f}".format(x))  # Express in whole numbers with comma separators, rounded to no decimals
             elif col == "TVL":
-                df[col] = df[col].apply(lambda x: "${:,.2f}".format(x))  # Express as currency
+                df[col] = df[col].apply(lambda x: "${:,.0f}".format(x))  # Express as currency, rounded to no decimals
             elif col != "chain":
-                df[col] = df[col].apply(lambda x: "{:,.2f}".format(x))
+                df[col] = df[col].apply(lambda x: "{:,.0f}".format(x))  # Rounded to no decimals
 
         # Calculate the figure height based on the number of rows and columns. Added extra space for the column headers.
         fig_height = 2
@@ -326,7 +326,7 @@ class Grapher:
         df.set_index("day", inplace=True)
 
         # Pivot the dataframe so that each bridge has its own column
-        df_pivot = df.pivot(columns="name", values="balance_cumu")
+        df_pivot = df.pivot(columns="bridge", values="amount")
 
         # Define a function to format the date
         def format_date(x, pos=None):
