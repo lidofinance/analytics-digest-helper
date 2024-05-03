@@ -63,7 +63,7 @@ def get_queries(start_date: str, end_date: str, sol_start_deposits: float, sol_e
         ),
         "totalStEthInDeFi": QueryBase(
             name="totalStEthInDeFi",
-            query_id=2740414,
+            query_id=2740000,
             params=[
                 QueryParameter.date_type("digest_start_date", start_date),
                 QueryParameter.date_type("digest_end_date", end_date),

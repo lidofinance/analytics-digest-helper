@@ -106,52 +106,18 @@ def process_dexLiquidityReserves(df: pd.DataFrame) -> str:
 def process_totalStEthInDeFi(df: pd.DataFrame) -> str:
 
     # Order the dataframe from oldest to latest
-    df = df.sort_values("time")    
+    df = df.sort_values("time")
 
-    # Calculate the changes
-    liquidity_pools_diff = df["liquidity_pools"].diff().dropna()
-    lending_pools_diff = df["lending_pools"].diff().dropna()
-    stETH_in_DeFi_diff = df["stETH_in_DeFi"].diff().dropna()
-
-    # Get the total changes
-    total_liquidity_pools_change = liquidity_pools_diff.sum()
-    total_lending_pools_change = lending_pools_diff.sum()
-    total_stETH_in_DeFi_change = stETH_in_DeFi_diff.sum()
-
-    # Get the total percentage changes
-    total_liquidity_pools_pct_change = (
-        (df["liquidity_pools"].iloc[-1] - df["liquidity_pools"].iloc[0]) / df["liquidity_pools"].iloc[0] * 100
-    )
-    total_lending_pools_pct_change = (
-        (df["lending_pools"].iloc[-1] - df["lending_pools"].iloc[0]) / df["lending_pools"].iloc[0] * 100
-    )
-    total_stETH_in_DeFi_pct_change = (
-        (df["stETH_in_DeFi"].iloc[-1] - df["stETH_in_DeFi"].iloc[0]) / df["stETH_in_DeFi"].iloc[0] * 100
-    )
-
-    # Get the final (most recent) value of stETH in DeFi
-    final_stETH_in_DeFi = df["stETH_in_DeFi"].iloc[-1]
-
-    # Get the final (most recent) percentage of stETH_DeFi_share
-    final_stETH_DeFi_share = df["stETH_DeFi_share"].iloc[-1]
+    # Get the latest row, that is the data at the end_date
+    latest_row = df.iloc[-1]
 
     # Format the changes into a string
-    result = f"""
-    Liquidity Pools:
-    Absolute change: {total_liquidity_pools_change:.0f}
-    Percentage change: {total_liquidity_pools_pct_change:.2f}%
-
-    Lending Pools:
-    Absolute change: {total_lending_pools_change:.0f}
-    Percentage change: {total_lending_pools_pct_change:.2f}%
-
-    Total stETH in DeFi:
-    Absolute change: {total_stETH_in_DeFi_change:.0f}
-    Percentage change: {total_stETH_in_DeFi_pct_change:.2f}%
-    Final value: {final_stETH_in_DeFi:.0f}
-
-    Percentage of stETH in DeFi: {final_stETH_DeFi_share:.2f}%
-    """
+    result = (
+        f"Liquidity Pools Balance: {latest_row['liquidity_pools_balance']:.0f}\n"
+        f"Liquidity Pools Percentage Change: {float(latest_row['liquidity_pct_change']):.2f}%\n"
+        f"Lending Pools Balance: {latest_row['lending_pools_balance']:.0f}\n"
+        f"Lending Pools Percentage Change: {float(latest_row['lending_pct_change']):.2f}%"
+    )
 
     return result
 

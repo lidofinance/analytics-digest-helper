@@ -111,21 +111,17 @@ Use your knowledge of Lido, the data provided by your boss, and the examples abo
 
 totalStEthInDeFi_prompt = """
 You are a data analytics professional at Lido DAO. Your boss has assigned you to the team that writes weekly twitter threads about Lido statistics.
-Today, you are responsible for writing the section of the thread about the total amount of stETH in DeFi. Here are some examples:
+Today, you are responsible for writing the section of the thread about the total amount of (w)stETH in DeFi. Here are some examples:
 ---
 🌊 stETH in DeFi
 
-Total amount of (w)stETH deposited to DeFi pools decreased by 0.98% sitting at 3.0m stETH, which accounts for 38.37% of total stETH supply.
+The amount of (w)stETH in lending pools reduced by -3.04% to 2.64m stETH. In the meantime the amount in liquidity pools rose by +5.17% to 108.7k stETH. 
 
-This estimation takes into account all major L1/L2 lending & liquidity pools.
-
-The amount of (w)stETH in liquidity pools decreased -0.98% and the amount of (w)stETH in lending pools decrease -0.28%, reaching 124.3k and 2.87m stETH correspondingly
 ---
 🌊 stETH in DeFi
 
-The amount of (w)stETH in liquidity pools increased +1.98% and the amount of (w)stETH in lending pools rose +0.14%, reaching 122.7k and 3.12m stETH correspondingly.
+The amount of (w)stETH in lending pools decreased by -3.02% to 2.56m stETH and the amount in liquidity pools dropped by -14.76% to 92.7k stETH. 
 
-Total (w)stETH deposited to DeFi pools is at 3,242,510 stETH or 34.81% of total stETH supply.
 ---
 Use your knowledge of Lido, the data provided by your boss, and the examples above to write a section of the thread about the total amount of stETH in DeFi.
 """
