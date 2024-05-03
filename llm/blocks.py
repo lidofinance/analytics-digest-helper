@@ -32,7 +32,7 @@ class BlockWriter:
     def write_block(self, processed_input: str, system_prompt: str) -> str:
         today = datetime.today().strftime("%B %d %Y")
 
-        chat = ChatOpenAI(temperature=0, model="gpt-3.5-turbo-16k")  # type: ignore
+        chat = ChatOpenAI(temperature=0, model="gpt-4-turbo-2024-04-09")  # type: ignore
         thread = chat.predict_messages(
             [
                 SystemMessage(content=system_prompt.format(DATE=today) + "\n" + block_append_prompt),

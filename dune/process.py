@@ -37,9 +37,6 @@ def process_tvl(df: pd.DataFrame) -> str:
 
 
 def process_netDepositGrowthLeaders(df: pd.DataFrame) -> str:
-    # Calculate rank by net deposit growth
-    df = df.sort_values("eth_deposits_growth", ascending=False)
-    df["rank"] = range(1, len(df) + 1)
 
     # Find Lido's stats
     lido_stats = df[df["name"] == "Lido"]
@@ -49,10 +46,15 @@ def process_netDepositGrowthLeaders(df: pd.DataFrame) -> str:
         return ""
 
     lido_net_deposit_growth = round(lido_stats.iloc[0]["eth_deposits_growth"], 0)
-    lido_rank = lido_stats.iloc[0]["rank"]
 
-    return f"Lido had net deposit growth of {lido_net_deposit_growth} ETH. ETH Growth Leaderboard rank: {lido_rank}"
-
+    # If net deposit is positive (i.e. more deposits than withdrawals)
+    if lido_net_deposit_growth >= 0:
+        lido_rank = lido_stats.iloc[0]["eth_deposits_rank"]
+        return f"Lido had net deposit growth of {lido_net_deposit_growth} ETH. ETH deposits rank: {lido_rank}"
+    # If net deposit is negative
+    else:
+        lido_rank = lido_stats.iloc[0]["eth_withdrawals_rank"]
+        return f"Lido had net unstake of {lido_net_deposit_growth} ETH. ETH unstaking rank: {lido_rank}"
 
 def process_stETHApr(df: pd.DataFrame) -> str:
     # Get the most recent 7d moving average

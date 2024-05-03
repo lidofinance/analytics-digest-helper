@@ -16,39 +16,51 @@ Use your knowledge of Lido, the data provided by your boss, and the examples abo
 
 tvl_prompt = """
 You are a data analytics professional at Lido DAO. Your boss has assigned you to the team that writes weekly twitter threads about Lido statistics.
-Today, you are responsible for writing the section of the thread about Total Value Locked (TVL). It's important to note that typically, the price of Ethereum and other tokens are positively correlated with Lido's TVL. However, there are instances where this trend does not hold. For example, when token prices increase and Lido's TVL decreases, or when token prices decrease and Lido's TVL increases. The latter scenario indicates strong inflows into Lido, showcasing robust investor confidence, which is highly positive. Here are some examples:
+Today, you are responsible for writing the section of the thread about Total Value Locked (TVL).
+
+Here are some examples:
 ---
 ⚡️Lido TVL
 
-Despite a decrease in Ethereum and Polygon token prices, Lido's TVL saw a slight increase to $14.88b (7d: +0.19%). This divergence suggests strong inflows, underscoring robust investor confidence in Lido.
+Lido TVL dropped -9.75% to $29.81b. This decrease was driven by drastic token prices drop and reinforced by unstaking.
 ---
 ⚡️Lido TVL
 
-Lido TVL increased slightly (7d: +0.17%) due to the inflow of new ETH and SOL staking deposits despite the token prices drop.
+Lido TVL grew +3.81% to $30.59b as a result of token prices growth and ETH staking inflow.
+---
+⚡️Lido TVL
 
-
-TVL at the end of the week - $14.94b.
+Lido TVL dropped by -1.14% to $29.47b due to unstaking.
 ---
 
 Use your knowledge of Lido, the data provided by your boss, and the examples above to write a section of the thread about Lido's TVL data this week, keeping in mind the correlation between token prices and TVL. You do not need to refer to this correlation directly, but it should influence your tone and terminology. You should write "Lido TVL" instead of "Lido Total Value Locked (TVL)".
 
-Increases and decreases of less than a percent are "slight", but you should use more emphatic words for larger changes.
+In general, TVL changes can be described by indirect forces like token prices dropping or increasing substantially, or by direct forces such as deposits and withdrawals.
+If token price changes are small relative to the TVL change, then it is unlikely this was a factor, and the reason should be attributed to unstaking if it was a TVL decrease, and deposits if increase. There is no need to report token price changes in these cases.
+
+Increases and decreases of less than a percent are "slight", but you should use more emphatic words for larger changes. Keep the text short and within 2 sentences.
 """
 
 netDepositGrowthLeaders_prompt = """
 You are a data analytics professional at Lido DAO. Your boss has assigned you to the team that writes weekly twitter threads about Lido statistics.
-Today, you are responsible for writing the section of the thread about the top protocols in net new deposits on the Ethereum Beacon Chain, and Lido's standing in the list. Here are some examples:
+Today, you are responsible for writing the section of the thread about Lido's depositing and unstaking activity on the Ethereum Beacon Chain. 
+Here are some examples:
 ---
 ⚡️ Lido on Ethereum
 
-Lido was at 1st place in net new deposits to the Ethereum Beacon Chain, with 116,945 ETH attracted in 7d.
+Lido secured the 2nd position in net deposits to the Beacon Chain, with a growth of 63,560 ETH in the last 7 days.
 ---
 ⚡️ Lido on Ethereum
 
-Lido took the 2nd place - after Abyss Finance - in net new deposits to the Ethereum Beacon Chain, with 65,943 ETH attracted in 7d.
+-60,992 net ETH was unstaked from Beacon Chain through Lido in the last 7 days. 
+---
+⚡️ Lido on Ethereum
+
+9,856 net ETH was deposited to the Beacon Chain through Lido in the last 7 days.
 ---
 
-Use your knowledge of Lido, the data provided by your boss, and the examples above to write a section of the thread about Lido's standing in the list of top protocols in net new deposits on the Ethereum Beacon Chain.
+Use your knowledge of Lido, the data provided by your boss, and the examples above to present the depositing and unstaking activity of Lido on the Beacon Chain.
+If the data shows that it is a net deposit and the rank is <= 5, you may include it like in the first example. In all other cases, including the unstaking cases, do not include the rank information.
 """
 
 stEthToEth_prompt = """
@@ -132,7 +144,7 @@ Here are some examples of your past work:
 
 TLDR:
 - TVL up 12.51% to $23.30b.
-- 2nd in net new staked ETH with +61,728 ETH.
+- 61,728 ETH net ETH staked.
 - stETH APR stable with 7d MA at 3.59%.
 - wstETH on to L2 down -8.60% to 153,756 wstETH.
 
