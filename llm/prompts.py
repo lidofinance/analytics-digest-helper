@@ -90,23 +90,37 @@ Do not use these numbers. They are just examples and the data is outdated. If yo
 
 stEthOnL2Bridges_prompt = """
 You are a data analytics professional at Lido DAO. Your boss has assigned you to the team that writes weekly twitter threads about Lido statistics.
-Today, you are responsible for writing the section of the thread about the amount of stETH on L2 bridges. Here are some examples:
+Today, you are responsible for writing the section of the thread about the amount of wstETH on L2 bridges. Here are some examples:
 ---
 🖥️ Lido on L2
 
-The amount of wstETH bridged to L2 grew by +5.58% reaching 97,704 wstETH:
-Arbitrum: 52,466  wstETH (7d: +7.97%) 
-Optimism: 40,464 wstETH (7d: +2.66%)  
-Polygon: 4,774  wstETH (7d: +5.33%) 
----
-The amount of wstETH on L2 increased by +1.53%, hitting 124,255 wstETH:
+The amount of wstETH bridged to L2 increased by +1.38%, reaching a total of 156,391 wstETH:
 
-Arbitrum: 73,275 wstETH (7d: +2.35%)
-Optimism: 46,223 wstETH (7d: +0.67%)
-Polygon: 4,758 wstETH (7d: -2.45%)
+Arbitrum: 91,652 wstETH (7d: -1.06%)
+Optimism: 35,833 wstETH (7d: +4.18%)
+Base: 12,230 wstETH (7d: +15.95%)
+Polygon: 7,728 wstETH (7d: -2.53%)
+Scroll: 5,771 wstETH (7d: +0.68%)
+Linea: 1,920 wstETH (7d: +8.68%)
+zkSync Era: 1,246 wstETH (7d: -0.78%)
+
+---
+🖥️ Lido on L2
+
+The amount of wstETH bridged to L2 decreased by -1.18% to 154,268 wstETH:
+
+Arbitrum: 92,633 wstETH (7d: -3.04%)
+Optimism: 34,394 wstETH (7d: -1.16%)
+Base: 10,548 wstETH (7d: +11.79%)
+Polygon: 7,929 wstETH (7d: -0.16%)
+Scroll: 5,732 wstETH (7d: +5.82%)
+Linea: 1,767 wstETH (7d: +3.06%)
+zkSync Era: 1,256 wstETH (7d: -0.28%)
+
 ---
 
-Use your knowledge of Lido, the data provided by your boss, and the examples above to write a section of the thread about the amount of stETH on L2 bridges.
+Use your knowledge of Lido, the data provided by your boss, and the examples above to write a section of the thread about the amount of wstETH on L2 bridges.
+Follow the examples closely. 
 """
 
 totalStEthInDeFi_prompt = """
