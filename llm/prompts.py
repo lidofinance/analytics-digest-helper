@@ -140,6 +140,29 @@ The amount of (w)stETH in lending pools decreased by -3.02% to 2.56m stETH and t
 Use your knowledge of Lido, the data provided by your boss, and the examples above to write a section of the thread about the total amount of stETH in DeFi.
 """
 
+bridgedToCosmos_prompt = """
+You are a data analytics professional at Lido DAO. Your boss has assigned you to the team that writes weekly twitter threads about Lido statistics.
+Today, you are responsible for writing the section of the thread about the amount of wstETH bridged to Cosmos. Here are some examples:
+---
+🖥️ Lido on Cosmos
+
+wstETH bridged to Cosmos rose to 1,977 wstETH (7d: +1.07%).
+
+---
+🖥️ Lido on Cosmos
+
+wstETH bridged to Cosmos is -2.60% down to 1,875 wstETH.
+
+---
+🖥️ Lido on Cosmos
+
+wstETH bridged to Cosmos is at 1,956 wstETH (7d:  -0.15%).
+
+---
+Use your knowledge of Lido, the data provided by your boss, and the examples above to write a section of the thread about the amount of wstETH bridged to Cosmos.
+Follow the examples closely.
+"""
+
 thread_prompt = """
 You are writing a thread about Lido statistics for the week of {start_date} to {end_date}.
 You are a data analytics professional at Lido DAO. Your boss has assigned you to the team that writes weekly twitter threads about Lido statistics.
@@ -150,73 +173,64 @@ Keep the TLDR very short and brief. Follow the example closely.
 Here are some examples of your past work:
 ---
 1/
-📊 Lido Weekly Digest: January 8 - January 15, 2024
+📊 Lido Weekly Digest: April 22 - April 29, 2024
 
 TLDR:
-- TVL up 12.51% to $23.30b.
-- 61,728 ETH net ETH staked.
-- stETH APR stable with 7d MA at 3.59%.
-- wstETH on to L2 down -8.60% to 153,756 wstETH.
+- TVL up 3.81% to $30.59b.
+- 9,856 ETH net staked.
+- 7d stETH APR at 3.17%.
+- wstETH on L2 dropped -2.29% to 150,674 wstETH.
+- (w)stETH 7d trading volume at $1.79b.
 
 2/
 ⚡️Lido TVL
 
-Lido TVL surged to $23.30b last week driven by ETH price growth, this represents +12.51% increase compared to the previous week.
-
-
-
+Lido TVL grew +3.81% to $30.59b as a result of token prices growth and ETH staking inflow.
 
 3/
 ⚡️ Lido on Ethereum
 
-Lido secured the 2nd place in net new deposits to the Ethereum Beacon Chain, with the growth of 61,728 ETH in 7 days.
-
-
+9,856 ETH net was deposited to the Beacon Chain through Lido in the last 7 days.
 
 4/
 ⚡️ stETH APR
 
-The stETH APR remained at the same level as previous week, with the 7-day moving average at 3.59%.
-
-
+The 7d stETH APR remained stable during the last week going down 1bp to 3.17%.
 
 5/ 
 🌊 stETH in DeFi
 
-The amount of (w)stETH in liquidity pools increased +1.98% and the amount of (w)stETH in lending pools rose +0.14%, reaching 122.7k and 3.12m stETH correspondingly.
+The amount of (w)stETH in lending pools dropped by -1.86% to 2.52m stETH while the amount in liquidity pools shrank by -3.18% to 89.7k stETH. 
 
-Total (w)stETH deposited to DeFi pools is at 3,242,510 stETH or 34.81% of total stETH supply.
+6/
+🌊 stETH volumes
 
-6/ 
-🖥️ Lido on L2
-
-The total amount of wstETH bridged to L2 decreased by -8.60% to 153,756 wstETH. 
-At the same time the L2s with smaller wstETH supply - Polygon, Base and Linea - gained traction this week. 
-
-Arbitrum: 101,573 wstETH (7d: -11.88%)
-Optimism: 42,848 wstETH (7d: -2.61%)
-Polygon: 6,619 wstETH (7d: +3.24%)
-Base: 2,716 wstETH (7d: +6.31%)
-Linea: 1,595 wstETH (7d: +9.64%)
-
-
-
+(w)stETH 7d trading volume is $1.79b, -10.75% lower compared to previous week.
 
 7/ 
+🖥️ Lido on L2
+
+The total amount of wstETH bridged to L2 decreased by -2.29%, current amount is 150,674 wstETH. 
+
+Arbitrum: 85,963 wstETH (7d: -3.78%)
+Optimism: 34,333 wstETH (7d: -1.99%)
+Base: 12,714 wstETH (7d: +1.44%)
+Polygon: 7,727 wstETH (7d: -1.41%)
+Scroll: 7,022 wstETH (7d: +8.84%)
+Linea: 1,787 wstETH (7d: -2.20%)
+zkSync Era: 1,118 wstETH (7d: -4.61%)
+
+8/ 
 🖥️ Lido on Cosmos
 
-The amount of wstETH on Cosmos has increased moderately to 2,940 wstETH (7d: +2.98%).
+wstETH bridged to Cosmos is at 1,956 wstETH (7d:  -0.15%).
 
-
-
-8/  
+9/  
 Note that by default the data is presented for Monday, 00:00 UTC (unless otherwise specified), with the change presented for the last 7 days.
 
-9/
+10/
 Check out the Lido Dashboards Catalogue https://dune.com/lido/lido-dashboards-catalogue to keep up with further Lido developments.
 🏝️
-
-
 
 -------------------
 

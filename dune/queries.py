@@ -69,5 +69,13 @@ def get_queries(start_date: str, end_date: str, sol_start_deposits: float, sol_e
                 QueryParameter.date_type("digest_end_date", end_date),
             ],
         ),
+        "bridgedToCosmos": QueryBase(
+            name="bridgedToCosmos",
+            query_id=3215855,
+            params=[
+                QueryParameter.date_type("digest_start_date", start_date),
+                QueryParameter.date_type("digest_end_date", end_date),
+            ],
+        ),
     }
     return queries

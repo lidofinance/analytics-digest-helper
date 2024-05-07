@@ -172,6 +172,18 @@ def process_bridgeChange(df):
 
     return df_string
 
+def process_bridgedToCosmos(df):
+    # Sort by day
+    df = df.sort_values("day")
+
+    # Get values 
+    balance = df.iloc[-1]['balance_cumu']
+    balance_7d_ago = df.iloc[-8]['balance_cumu']
+    pct_change = (balance/balance_7d_ago - 1) * 100
+
+    result_string = f"The balance of wstETH on Cosmos is {balance:.0f}, with a 7d change of {pct_change:.2f}%."
+
+    return result_string
 
 # Define a dictionary mapping the DataFrame names to their respective processing functions
 process_functions = {
@@ -182,6 +194,7 @@ process_functions = {
     # "dexLiquidityReserves": process_dexLiquidityReserves,
     "bridgeChange": process_bridgeChange,
     "totalStEthInDeFi": process_totalStEthInDeFi,
+    "bridgedToCosmos": process_bridgedToCosmos,
 }
 
 
