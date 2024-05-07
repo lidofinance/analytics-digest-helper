@@ -20,6 +20,7 @@ class Grapher:
             "stEthToEth": self.graph_stEthToEth,
             "tvl": self.graph_tvl,
             "totalStEthInDeFi": self.graph_totalStEthInDeFi,
+            "bridgedToCosmos": self.graph_bridgedToCosmos,
             # "dexLiquidityReserves": self.graph_dexLiquidityReserves,
         }
         self.graph_location = f"/tmp/digest/{end_date}/graphs"
@@ -320,6 +321,38 @@ class Grapher:
         plt.xticks(rotation=30)
 
         self.save_figure(fig, "stEthOnL2Bridges")
+
+    def graph_bridgedToCosmos(self, df: pd.DataFrame):
+        # Convert the 'day' column to datetime format
+        df["day"] = pd.to_datetime(df["day"])
+
+        # Reset default settings
+        plt.rcdefaults()
+
+        # Plot area chart
+        fig, ax = plt.subplots(figsize=(12,6))
+
+        ax.stackplot('day', 'balance_cumu', data=df[['day', 'balance_cumu']])
+
+        # Set plot title
+        ax.set_title("wstETH on Cosmos bridge over time", fontsize=16)
+
+        # Remove axis labels
+        ax.set_xlabel("")
+        ax.set_ylabel("")
+
+        # Define a function to format the date
+        def format_date(x, pos=None):
+            return mdates.num2date(x).strftime("%B %-d")
+        
+        # Set the date formatter for the x-axis
+        ax.xaxis.set_major_formatter(mtick.FuncFormatter(format_date))
+
+        # # Rotate date labels slightly
+        plt.xticks(rotation=30)
+
+        self.save_figure(plt, "bridgedToCosmos")
+
 
     def process_all(self, dune_dataframes: dict[str, pd.DataFrame]):
         for df_name, df in dune_dataframes.items():
