@@ -315,9 +315,9 @@ class CEXDataLoader:
         return klines_by_exchange
 
     def get_trading_volume(self, symbol: str) -> pd.DataFrame:
-        timestamp_to = int(datetime.timestamp(self.end_date))
-        period_required = max(self.period, 92) # for this API endpoint, to return daily data, it requires minimum 90 day period
-        timestamp_from = timestamp_to - (period_required-1)*86400
+        timestamp_to = int(datetime.timestamp(self.end_date)) + 86400
+        period_required = max(self.period, 91) # for this API endpoint, to return daily data, it requires minimum 90 day period
+        timestamp_from = timestamp_to - period_required * 86400
         url = f'https://api.coingecko.com/api/v3/coins/{symbol}/market_chart/range?vs_currency=usd&from={timestamp_from}&to={timestamp_to}'
         response = requests.get(url)
         if response.status_code == 200: 
@@ -338,6 +338,11 @@ class CEXDataLoader:
             "STETH/BUSD", "STETH/USDP", "STETH/TUSD", "STETH/WBTC", "STETH/BTC",
             "STETH/LDO", "STETH/BTC","STETH/EUR", "STETH/WETH", "STETH/ETH"
         ]
+
+        # get coingecko price
+        steth_trading_volume = self.get_trading_volume('staked-ether')
+
+        # get volume on exchanges 
         stethtot_klines = self.get_klines(all_steth_pairs)
         stethtot_offchain_all = []
         for key in stethtot_klines.keys():
@@ -347,7 +352,6 @@ class CEXDataLoader:
                 k.columns = [key1]
                 stethtot_offchain_all.append(k)
 
-        steth_trading_volume = self.get_trading_volume('staked-ether')
         df_stethtot_offchain = steth_trading_volume.copy()
         for kline in stethtot_offchain_all:
             df_stethtot_offchain = pd.merge(df_stethtot_offchain, kline, how = 'left', left_index = True, right_index = True).fillna(0)

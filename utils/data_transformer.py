@@ -25,37 +25,36 @@ class DataTransformer:
 
 
     def enrich_stethVolumes(df: pd.DataFrame, start_date: str, end_date: str) -> pd.DataFrame:
-        # # on-chain section (dune)
-        # df_dune_stethtot = df['stethVolumes']
-        # df_dune_stethtot['date'] = pd.to_datetime(df_dune_stethtot['day']).dt.date
-        # df_dune_stethtot = df_dune_stethtot[['date','chain','volume']].groupby(['date','chain']).agg({'volume': ['sum']}).reset_index()
-        # df_dune_stethtot.columns = ['date', 'chain', 'volume']
-        # chainlist = []
-        # for d in df_dune_stethtot['chain']:
-        #     if d not in chainlist:
-        #         chainlist.append(d)
-        # tv_by_chain = {}
-        # for chain in chainlist:
-        #     tv_by_chain.update({(chain): df_dune_stethtot.query('chain==@chain')[['date','volume']].set_index('date')})
+        # on-chain section (dune)
+        df['date'] = pd.to_datetime(df['day']).dt.date
+        df = df[['date','chain','volume']].groupby(['date','chain']).agg({'volume': ['sum']}).reset_index()
+        df.columns = ['date', 'chain', 'volume']
+        chainlist = []
+        for d in df['chain']:
+            if d not in chainlist:
+                chainlist.append(d)
+        tv_by_chain = {}
+        for chain in chainlist:
+            tv_by_chain.update({(chain): df.query('chain==@chain')[['date','volume']].set_index('date')})
         
-        # stethtot_klines_chain = []
-        # for key in tv_by_chain.keys():
-        #     if tv_by_chain[key].empty == False: 
-        #         k = tv_by_chain[key].copy()
-        #         k.columns = [key]
-        #         stethtot_klines_chain.append(k)
+        stethtot_klines_chain = []
+        for key in tv_by_chain.keys():
+            if tv_by_chain[key].empty == False: 
+                k = tv_by_chain[key].copy()
+                k.columns = [key]
+                stethtot_klines_chain.append(k)
 
-        # # off-chain section (exchange APIs)
-        # cex_data_loader = CEXDataLoader(start_date, end_date)
-        # df_stethtot_offchain = cex_data_loader.get_offchain_df()
+        # off-chain section (exchange APIs)
+        cex_data_loader = CEXDataLoader(start_date, end_date)
+        df_stethtot_offchain = cex_data_loader.get_offchain_df()
 
-        # # merge on-chain with off-chain
-        # df_stethtot_chain = df_stethtot_offchain
-        # for kline in stethtot_klines_chain:
-        #     df_stethtot_chain = pd.merge(df_stethtot_chain, kline, how = 'left', left_index = True, right_index = True).fillna(0)
-        # df_stethtot_chain.rename(columns = {'volume':'off_chain'}, inplace = True)
-        # df_stethtot_chain.to_csv('df_stethtot_chain.csv')
-        df_stethtot_chain = pd.read_csv('df_stethtot_chain.csv', index_col='date')
+        # merge on-chain with off-chain
+        df_stethtot_chain = df_stethtot_offchain
+        for kline in stethtot_klines_chain:
+            df_stethtot_chain = pd.merge(df_stethtot_chain, kline, how = 'left', left_index = True, right_index = True).fillna(0)
+        df_stethtot_chain.rename(columns = {'volume':'off_chain'}, inplace = True)
+        df_stethtot_chain.to_csv('df_stethtot_chain.csv')
+        # df_stethtot_chain = pd.read_csv('df_stethtot_chain.csv', index_col='date')
         print(df_stethtot_chain.sum().sum())
         return df_stethtot_chain
 
