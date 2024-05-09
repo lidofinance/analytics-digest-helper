@@ -8,19 +8,19 @@ class DataTransformer:
         self.end_date = end_date
         # the enrich functions enrich dune data with additional off-chain data where applicable
         self.enrich_functions = {
-            "stethVolumes": self.enrich_stethVolumes
+            "stethVolumes": DataTransformer.enrich_stethVolumes
         }
         # the processing functions is after enrichment
         # it takes in the enriched dataframe and produces a string, to be used in the prompt
         self.process_functions = {
-            "tvl": self.process_tvl,
-            "netDepositGrowthLeaders": self.process_netDepositGrowthLeaders,
-            "stETHApr": self.process_stETHApr,
-            "stEthToEth": self.process_stEthToEth,
-            # "dexLiquidityReserves": self.process_dexLiquidityReserves,
-            "bridgeChange": self.process_bridgeChange,
-            "totalStEthInDeFi": self.process_totalStEthInDeFi,
-            "bridgedToCosmos": self.process_bridgedToCosmos,
+            "tvl": DataTransformer.process_tvl,
+            "netDepositGrowthLeaders": DataTransformer.process_netDepositGrowthLeaders,
+            "stETHApr": DataTransformer.process_stETHApr,
+            "stEthToEth": DataTransformer.process_stEthToEth,
+            # "dexLiquidityReserves": DataTransformer.process_dexLiquidityReserves,
+            "bridgeChange": DataTransformer.process_bridgeChange,
+            "totalStEthInDeFi": DataTransformer.process_totalStEthInDeFi,
+            "bridgedToCosmos": DataTransformer.process_bridgedToCosmos,
         }
 
 
