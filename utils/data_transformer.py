@@ -52,7 +52,7 @@ class DataTransformer:
         df_stethtot_chain = df_stethtot_offchain
         for kline in stethtot_klines_chain:
             df_stethtot_chain = pd.merge(df_stethtot_chain, kline, how = 'left', left_index = True, right_index = True).fillna(0)
-        df_stethtot_chain.rename(columns = {'volume': 'off_chain'}, inplace=True)
+        df_stethtot_chain.rename(columns = {'volume': 'off_chain'}, inplace = True)
         df_stethtot_chain.to_csv('df_stethtot_chain.csv')
         # df_stethtot_chain = pd.read_csv('df_stethtot_chain.csv', index_col='date')
         print(df_stethtot_chain.sum().sum())
