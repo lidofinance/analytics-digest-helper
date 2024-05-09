@@ -77,5 +77,9 @@ def get_queries(start_date: str, end_date: str, sol_start_deposits: float, sol_e
                 QueryParameter.date_type("digest_end_date", end_date),
             ],
         ),
+        "stethVolumes": QueryBase(
+            name="stethVolumes",
+            query_id=2810114
+        ),
     }
     return queries

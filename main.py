@@ -1,6 +1,6 @@
 import argparse
 from dune.loader import load
-from dune.process import process_dune
+from utils.data_transformer import DataTransformer
 from graphing.graph import Grapher
 from pathlib import Path
 import datetime
@@ -21,7 +21,9 @@ def main(
     start_time = time.time()  # start timing
     dune_loaded = load(str(start_date), str(end_date), sol_start_deposits, sol_end_deposits)
     # dune_loaded = pickle.load(open('data/dune_data_2024-02-18_13-23.pkl', 'rb'))
-    processed = process_dune(dune_loaded)
+    data_transformer = DataTransformer(start_date.strftime('%Y-%m-%d'), end_date.strftime('%Y-%m-%d'))
+    dune_enriched = data_transformer.enrich_dune(dune_loaded)
+    processed = data_transformer.process_dune(dune_enriched)
 
     writer = BlockWriter(str(end_date), str(start_date))
     thread = writer.compose_thread(processed)
