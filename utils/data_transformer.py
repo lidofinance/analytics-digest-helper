@@ -52,7 +52,7 @@ class DataTransformer:
         df_stethtot_chain = df_stethtot_offchain
         for kline in stethtot_klines_chain:
             df_stethtot_chain = pd.merge(df_stethtot_chain, kline, how = 'left', left_index = True, right_index = True).fillna(0)
-        df_stethtot_chain.rename(columns = {'volume':'off_chain'}, inplace = True)
+        df_stethtot_chain.rename(columns = {'volume': 'off_chain'}, inplace=True)
         df_stethtot_chain.to_csv('df_stethtot_chain.csv')
         # df_stethtot_chain = pd.read_csv('df_stethtot_chain.csv', index_col='date')
         print(df_stethtot_chain.sum().sum())
@@ -60,15 +60,13 @@ class DataTransformer:
 
 
     def enrich_dune(self, dune_results: dict[str, pd.DataFrame]) -> dict[str, pd.DataFrame]:
+        res = {}
 
         for df_name, df in dune_results.items():
             enrich_func = self.enrich_functions.get(df_name)
             if enrich_func is not None:
-                enriched_df = enrich_func(df, self.start_date, self.end_date)
-                self.dune_results[df_name] = enriched_df
-
-        return self.dune_results
-
+                res[df_name] = enrich_func(df, self.start_date, self.end_date)
+        return res
 
     def process_tvl(df: pd.DataFrame) -> str:
         # Select the row corresponding to 'Total'

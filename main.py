@@ -39,7 +39,7 @@ def main(
 
     print("Graphing")
     grapher = Grapher(str(end_date))
-    grapher.process_all(dune_loaded)
+    grapher.process_all(dune_enriched)
     print(f"Done Graphing. Graphs are saved in {save_location}/graphs folder")
     end_time = time.time()
     print(f"Time taken: {end_time - start_time} seconds")
