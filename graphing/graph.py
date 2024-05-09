@@ -21,6 +21,7 @@ class Grapher:
             "tvl": self.graph_tvl,
             "totalStEthInDeFi": self.graph_totalStEthInDeFi,
             "bridgedToCosmos": self.graph_bridgedToCosmos,
+            "stethVolumes": self.graph_stethVolumes
             # "dexLiquidityReserves": self.graph_dexLiquidityReserves,
         }
         self.graph_location = f"/tmp/digest/{end_date}/graphs"
@@ -353,6 +354,27 @@ class Grapher:
 
         self.save_figure(plt, "bridgedToCosmos")
 
+    def graph_stethVolumes(self, df: pd.DataFrame):
+
+        # Reset default settings
+        plt.rcdefaults()
+
+        fig, ax = plt.subplots(figsize=(10,8))
+
+        # sum across all dates
+        category_sums = df.sum()
+
+        # create pie chart
+        patches, labels, pct_texts = ax.pie(
+            category_sums, labels=category_sums.index, autopct='%1.1f%%', startangle=140, pctdistance=0.8, wedgeprops=dict(width=0.5), rotatelabels=True)
+        
+        # rotate the % as well
+        for label, pct_text in zip(labels, pct_texts):
+            pct_text.set_rotation(label.get_rotation())
+
+        plt.title('stETH volume aggregated by chain')
+        plt.tight_layout()
+        self.save_figure(plt, "stethVolumes")
 
     def process_all(self, dune_dataframes: dict[str, pd.DataFrame]):
         for df_name, df in dune_dataframes.items():
