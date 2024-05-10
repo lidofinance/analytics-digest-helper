@@ -21,7 +21,7 @@ def main(
     start_time = time.time()  # start timing
     dune_loaded = load(str(start_date), str(end_date), sol_start_deposits, sol_end_deposits)
     # dune_loaded = pickle.load(open('data/dune_data_2024-02-18_13-23.pkl', 'rb'))
-    data_transformer = DataTransformer(start_date.strftime('%Y-%m-%d'), end_date.strftime('%Y-%m-%d'))
+    data_transformer = DataTransformer(start_date, end_date)
     dune_enriched = data_transformer.enrich_dune(dune_loaded)
     processed = data_transformer.process_dune(dune_enriched)
 
@@ -38,7 +38,7 @@ def main(
     print(f"Wrote thread to file in {save_location}/thread.md")
 
     print("Graphing")
-    grapher = Grapher(str(end_date))
+    grapher = Grapher(start_date, end_date)
     grapher.process_all(dune_enriched)
     print(f"Done Graphing. Graphs are saved in {save_location}/graphs folder")
     end_time = time.time()

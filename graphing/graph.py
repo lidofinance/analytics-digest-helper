@@ -11,7 +11,8 @@ import os
 
 
 class Grapher:
-    def __init__(self, end_date: str):
+    def __init__(self, start_date: datetime, end_date: datetime):
+        self.start_date = start_date
         self.end_date = end_date
         self.graphing_functions = {
             "netDepositGrowthLeaders": self.graph_netDepositGrowthLeaders,
@@ -280,7 +281,7 @@ class Grapher:
         df["day"] = pd.to_datetime(df["day"])
 
         # Filter out the data after July 16, 2023
-        df = df[df["day"] <= datetime.strptime(self.end_date, "%Y-%m-%d %H:%M:%S")]
+        df = df[df["day"] <= self.end_date]
 
         # Set 'day' as the index
         df.set_index("day", inplace=True)
@@ -355,6 +356,8 @@ class Grapher:
         self.save_figure(plt, "bridgedToCosmos")
 
     def graph_stethVolumes(self, df: pd.DataFrame):
+
+        df = df[(pd.to_datetime(df.index) <= self.end_date) & (pd.to_datetime(df.index) >= self.start_date)]
 
         # Reset default settings
         plt.rcdefaults()

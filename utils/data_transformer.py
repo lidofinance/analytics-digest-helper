@@ -1,9 +1,17 @@
 import pandas as pd
+from datetime import datetime, timedelta
 from utils.cex_data_loader import CEXDataLoader
+import logging
+
+logging.basicConfig(
+    format='%(asctime)s %(levelname)s %(message)s',
+    datefmt='%Y-%m-%d %H:%M:%S',
+    level=logging.INFO
+)
 
 class DataTransformer:
 
-    def __init__(self, start_date: str, end_date: str):
+    def __init__(self, start_date: datetime, end_date: datetime):
         self.start_date = start_date
         self.end_date = end_date
         # the enrich functions enrich dune data with additional off-chain data where applicable
@@ -21,10 +29,11 @@ class DataTransformer:
             "bridgeChange": DataTransformer.process_bridgeChange,
             "totalStEthInDeFi": DataTransformer.process_totalStEthInDeFi,
             "bridgedToCosmos": DataTransformer.process_bridgedToCosmos,
+            "stethVolumes": DataTransformer.process_stethVolumes
         }
 
 
-    def enrich_stethVolumes(df: pd.DataFrame, start_date: str, end_date: str) -> pd.DataFrame:
+    def enrich_stethVolumes(df: pd.DataFrame, start_date: datetime, end_date: datetime) -> pd.DataFrame:
         # on-chain section (dune)
         df['date'] = pd.to_datetime(df['day']).dt.date
         df = df[['date','chain','volume']].groupby(['date','chain']).agg({'volume': ['sum']}).reset_index()
@@ -43,9 +52,16 @@ class DataTransformer:
                 k = tv_by_chain[key].copy()
                 k.columns = [key]
                 stethtot_klines_chain.append(k)
-
+    
         # off-chain section (exchange APIs)
-        cex_data_loader = CEXDataLoader(start_date, end_date)
+
+        # first we need to extend the start date to include 1 more period before
+        # e.g. if start_date = 2024-04-29 and end_date = 2024-05-05, we want to have extended_start_date = 2024-04-22
+        # we need this to calculate the values for 1 week before, so we can say, the values rose / drop by X%
+        period = (end_date - start_date).days + 1
+        extended_start_date = end_date - timedelta(days = 2 * period - 1)
+        logging.info(f"Loading offchain CEX data with start date as {extended_start_date} and end date as {end_date}...")
+        cex_data_loader = CEXDataLoader(extended_start_date, end_date)
         df_stethtot_offchain = cex_data_loader.get_offchain_df()
 
         # merge on-chain with off-chain
@@ -55,7 +71,6 @@ class DataTransformer:
         df_stethtot_chain.rename(columns = {'volume': 'off_chain'}, inplace = True)
         df_stethtot_chain.to_csv('df_stethtot_chain.csv')
         # df_stethtot_chain = pd.read_csv('df_stethtot_chain.csv', index_col='date')
-        print(df_stethtot_chain.sum().sum())
         return df_stethtot_chain
 
 
@@ -66,6 +81,8 @@ class DataTransformer:
             enrich_func = self.enrich_functions.get(df_name)
             if enrich_func is not None:
                 res[df_name] = enrich_func(df, self.start_date, self.end_date)
+            else:
+                res[df_name] = df
         return res
 
     def process_tvl(df: pd.DataFrame) -> str:
@@ -124,14 +141,18 @@ class DataTransformer:
             return f"Lido had net unstake of {lido_net_deposit_growth} ETH. ETH unstaking rank: {lido_rank}"
 
     def process_stETHApr(df: pd.DataFrame) -> str:
+        # Sort DataFrame by time in descending order
+        df = df.sort_values("time", ascending=False)
+        
         # Get the most recent 7d moving average
         recent_7d_ma = df["stakingAPR_ma_7"].values[0]
+        week_ago_7d_ma = df["stakingAPR_ma_7"].values[7]
 
+        difference_in_bps = (recent_7d_ma - week_ago_7d_ma) * 10000
         # Format the result into a string
-        result_string = f"7d MA: {recent_7d_ma:.2%}"
+        result_string = f"7d MA: {recent_7d_ma:.2%}, change from 7d ago: {difference_in_bps:.0f}bps"
 
         return result_string
-
 
     def process_stEthToEth(df: pd.DataFrame) -> str:
         # Convert 'time' column to datetime
@@ -250,6 +271,27 @@ class DataTransformer:
 
         result_string = f"The balance of wstETH on Cosmos is {balance:.0f}, with a 7d change of {pct_change:.2f}%."
 
+        return result_string
+    
+    def process_stethVolumes(df: pd.DataFrame) -> str:
+
+        dates = pd.to_datetime(df.index)
+        # the df here contains 2 periods. so we need to split into current period and previous period
+        min_date = dates.min()
+        max_date = dates.max()
+        
+        period_length = (max_date - min_date + timedelta(days = 1)) / 2
+        # this is start_date of current period
+        start_date = min_date + period_length
+        previous_sum = df[pd.to_datetime(df.index) < start_date].sum().sum()
+        current_sum = df[pd.to_datetime(df.index) >= start_date].sum().sum()
+        pct_change = (current_sum/previous_sum - 1) * 100
+
+        result_string = (
+            f"{period_length.days}d trading volume: ${current_sum}\n"
+            f"Previous trading volume: ${previous_sum}\n"
+            f"Percentage change: {pct_change}"
+        )
         return result_string
 
     def process_dune(self, dune_results: dict[str, pd.DataFrame]) -> dict[str, str]:

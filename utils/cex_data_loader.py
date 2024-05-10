@@ -3,13 +3,20 @@ import numpy as np
 import requests
 import json
 from datetime import datetime, timedelta
+import logging
+
+logging.basicConfig(
+    format='%(asctime)s %(levelname)s %(message)s',
+    datefmt='%Y-%m-%d %H:%M:%S',
+    level=logging.INFO
+)
 
 class CEXDataLoader:
 
-    def __init__(self, start_date: str, end_date: str):
+    def __init__(self, start_date: datetime, end_date: datetime):
         # all functions are inclusive of start_date and end_date
-        self.start_date = datetime.strptime(start_date, '%Y-%m-%d') # YYYY-MM-DD format
-        self.end_date = datetime.strptime(end_date, '%Y-%m-%d')
+        self.start_date = start_date
+        self.end_date = end_date
         self.period = (self.end_date - self.start_date).days + 1 # to be inclusive of both dates
         self.exchange_functions = {
             'hitbtc': self.fetch_hitbtc_daily_data,
@@ -43,14 +50,14 @@ class CEXDataLoader:
         if response.status_code == 200:  
             data = pd.DataFrame(json.loads(response.text), columns=['timestamp', 'open', 'close', 'min', 'max', 'volume', 'volume_quote'])
             if data.empty:
-                print("Did not return any data from HitBTC for", pair)
+                logging.info(f"Did not return any data from HitBTC for {pair}")
                 return pd.DataFrame()
             data.rename(columns = {'min':'low', 'max':'high'}, inplace = True)
             data['date'] = pd.to_datetime(data['timestamp']).dt.tz_localize(None) 
             data = self.get_data_formated(data, pair)
             return data[['volume']]
         else:
-            print("Did not receieve OK response from HitBTC API for", pair)
+            logging.info(f"Did not receieve OK response from HitBTC API for {pair}")
             return pd.DataFrame()
 
     # https://mxcdevelop.github.io/APIDoc/
@@ -62,13 +69,13 @@ class CEXDataLoader:
         if response.status_code == 200:  
             data = pd.DataFrame(json.loads(response.text)['data'], columns=['timestamp', 'open', 'close', 'high', 'low',  'volume', 'volume_quote'])
             if data.empty:
-                print("Did not return any data from MEXC for", pair)
+                logging.info(f"Did not return any data from MEXC for {pair}")
                 return pd.DataFrame()
             data['date'] = pd.to_datetime(data['timestamp'], unit='s')
             data = self.get_data_formated(data, pair)
             return data[['volume']]
         else:
-            print("Did not receieve OK response from MEXC API for", pair)  
+            logging.info(f"Did not receieve OK response from MEXC API for {pair}")  
             return pd.DataFrame()
 
     # https://www.notion.so/coinsbitwsapi/API-COINSBIT-WS-API-COINSBIT-cf1044cff30646d49a0bab0e28f27a87
@@ -82,14 +89,14 @@ class CEXDataLoader:
         if response.status_code == 200 and json.loads(response.text)['success'] == True:
             data = pd.DataFrame(json.loads(response.text)['result']['kline'], columns=['time', 'close', 'open', 'highest', 'lowest', 'volume', 'amount', 'market' ])
             if data.empty:
-                print("Did not return any data from Coinsbit for", pair)
+                logging.info(f"Did not return any data from Coinsbit for {pair}")
                 return pd.DataFrame()
             data.rename(columns = {'time':'timestamp', 'highest':'high', 'lowest':'low', 'amount':'volume_quote'}, inplace = True)
             data['date'] = pd.to_datetime(data['timestamp'], unit='s')
             data = self.get_data_formated(data, pair)
             return data[['volume']]
         else:
-            print("Did not receieve OK response from Coinsbit API for", pair)  
+            logging.info("Did not receieve OK response from Coinsbit API for {pair}")  
             return pd.DataFrame()
 
     # https://www.gate.io/api2#kline
@@ -100,7 +107,7 @@ class CEXDataLoader:
         if response.status_code == 200 and len(response.text)>100:  
             data = pd.DataFrame(json.loads(response.text)['data'], columns=["timestamp", "volume", "open", "high", "low", "close"])
             if data.empty:
-                print("Did not return any data from Gate.io for", pair)
+                logging.info(f"Did not return any data from Gate.io for {pair}")
                 return pd.DataFrame()
             data['timestamp'] = data['timestamp'].astype(int)
             data['date'] = pd.to_datetime(data['timestamp'], unit='ms')
@@ -108,7 +115,7 @@ class CEXDataLoader:
             data['volume_quote'] = data['volume']*data['close']
             return data[['volume']]
         else:
-            print("Did not receieve OK response from Gate.io API for", pair)  
+            logging.info(f"Did not receieve OK response from Gate.io API for {pair}")  
             return pd.DataFrame()
 
     # https://www.okx.com/docs-v5/en/#order-book-trading-market-data-get-candlesticks
@@ -124,7 +131,7 @@ class CEXDataLoader:
                 columns=['timestamp','open', 'high', 'low', 'close', 'volume', 'volume_currency', 'volume_quote', 'confirm']
             )
             if data.empty:
-                print("Did not return any data from OKX for", pair)
+                logging.info(f"Did not return any data from OKX for {pair}")
                 return pd.DataFrame()
             data['timestamp'] = data['timestamp'].astype(int)
             data['date'] = pd.to_datetime(data['timestamp'], unit='ms')
@@ -132,7 +139,7 @@ class CEXDataLoader:
             data = self.get_data_formated(data, pair)
             return data[['volume']]
         else:
-            print("Did not receieve OK response from OKX API for", pair)  
+            logging.info(f"Did not receieve OK response from OKX API for {pair}")  
             return pd.DataFrame()
 
     # https://bybit-exchange.github.io/docs/v5/market/kline
@@ -148,7 +155,7 @@ class CEXDataLoader:
                 columns=['t', 'o', 'h', 'l', 'c', 'v', 'volume_quote']
             )
             if data.empty:
-                print("Did not return any data from Bybit for", pair)
+                logging.info(f"Did not return any data from Bybit for {pair}")
                 return pd.DataFrame()
             data['t'] = data['t'].astype(int)
             data['date'] = pd.to_datetime(data['t'], unit='ms')
@@ -157,7 +164,7 @@ class CEXDataLoader:
             data = self.get_data_formated(data, pair)
             return data[['v']]
         else:
-            print("Did not receieve OK response from Bybit API for", pair)  
+            logging.info(f"Did not receieve OK response from Bybit API for {pair}")  
             return pd.DataFrame()
 
     # https://huobiapi.github.io/docs/spot/v1/en/#get-klines-candles
@@ -168,7 +175,7 @@ class CEXDataLoader:
         if response.status_code == 200 and json.loads(response.text)['status'] == 'ok':
             data = pd.DataFrame(json.loads(response.text)['data'])
             if data.empty:
-                print("Did not return any data from Huobi for", pair)
+                logging.info(f"Did not return any data from Huobi for {pair}")
                 return pd.DataFrame()
             data['date'] = pd.to_datetime(data['id'], unit='s')
             data['date'] = data['date'].dt.date
@@ -176,7 +183,7 @@ class CEXDataLoader:
             data = self.get_data_formated(data, pair).query('@self.start_date.date()<=index<=@self.end_date.date()')
             return data[['volume']]
         else:
-            print("Did not receieve OK response from Huobi API for", pair)  
+            logging.info(f"Did not receieve OK response from Huobi API for {pair}")  
             return pd.DataFrame()
         
     #https://github.com/Bitrue-exchange/Spot-official-api-docs#kline_endpoint    
@@ -187,7 +194,7 @@ class CEXDataLoader:
         if response.status_code == 200:
             data = pd.DataFrame(json.loads(response.text)['data'], columns=['is', 'o', 'h', 'l', 'c', 'v'])
             if data.empty:
-                print("Did not return any data from BiTrue for", pair)
+                logging.info(f"Did not return any data from BiTrue for {pair}")
                 return pd.DataFrame()
             data['date'] = pd.to_datetime(data['is'],unit='ms').dt.tz_localize(None).dt.date
             data = self.get_data_formated(data, pair) 
@@ -195,7 +202,7 @@ class CEXDataLoader:
             data['volume_quote'] = data['v']*data['c']
             return data[['v']]
         else:
-            print("Did not receieve OK response from BiTrue API for", pair)
+            logging.info(f"Did not receieve OK response from BiTrue API for {pair}")
             return pd.DataFrame()    
 
     #https://github.com/dcoinapi/openapi/wiki/HttpApi#get-kline-records
@@ -206,7 +213,7 @@ class CEXDataLoader:
         if response.status_code == 200:
             data = pd.DataFrame(json.loads(response.text)['data'], columns=['id', 'amount', 'vol', 'open', 'close', 'high', 'low'])
             if data.empty:
-                print("Did not return any data from DCoin for", pair)
+                logging.info(f"Did not return any data from DCoin for {pair}")
                 return pd.DataFrame()
             data['date'] = pd.to_datetime(data['id']*1000,unit='ms').dt.tz_localize(None).dt.date  
             data = self.get_data_formated(data, pair) 
@@ -214,7 +221,7 @@ class CEXDataLoader:
             data['volume_quote_corr'] = 0.5*data['vol']*data['close']
             return data[['vol']]
         else:
-            print("Did not receieve OK response from DCoin API for", pair)
+            logging.info(f"Did not receieve OK response from DCoin API for {pair}")
             return pd.DataFrame()    
 
     #https://data.azbit.com/swagger/index.html            
@@ -231,7 +238,7 @@ class CEXDataLoader:
         if response.status_code == 200:
             data = pd.DataFrame(json.loads(response.text), columns=['date', 'open', 'max', 'min', 'close', 'volume', 'volumeBase'])
             if data.empty:
-                print("Did not return any data from Azbit for", pair)
+                logging.info(f"Did not return any data from Azbit for {pair}")
                 return pd.DataFrame()
             data['date'] = pd.to_datetime(data['date']).dt.date
             
@@ -240,7 +247,7 @@ class CEXDataLoader:
             data['volume_quote'] = data['volume']*data['close']
             return data[['volume']]
         else:
-            print("Did not receieve OK response from Azbit API for", pair)
+            logging.info(f"Did not receieve OK response from Azbit API for {pair}")
             return pd.DataFrame()             
 
     #https://cointr-ex.github.io/openapis/spot.html#market-specifications
@@ -258,7 +265,7 @@ class CEXDataLoader:
         if response.status_code == 200:
             data = pd.DataFrame(json.loads(response.text)['data'], columns=['time', 'open', 'high', 'low','close', 'volume','quotevolume']) 
             if data.empty:
-                print("Did not return any data from CoinTR for", pair)
+                logging.info(f"Did not return any data from CoinTR for {pair}")
                 return pd.DataFrame()
             data['date'] = pd.to_datetime(data['time'], unit='s').dt.tz_localize(None).dt.date  
             data['date'] = pd.to_datetime(data['date']).dt.date     
@@ -268,7 +275,7 @@ class CEXDataLoader:
             data['volume_quote'] = data['volume']*data['close']
             return data[['volume']]
         else:
-            print("Did not receieve OK response from CoinTR API for", pair)
+            logging.info(f"Did not receieve OK response from CoinTR API for {pair}")
             return pd.DataFrame()
 
     #https://bitgetlimited.github.io/apidoc/en/spot/#get-candle-data
@@ -287,7 +294,7 @@ class CEXDataLoader:
         if response.status_code == 200:
             data = pd.DataFrame(json.loads(response.text)['data'], columns=['open', 'high', 'low','close', 'quoteVol','baseVol', 'usdtVol', 'ts'])
             if data.empty:
-                print("Did not return any data from BitGet for", pair)
+                logging.info(f"Did not return any data from BitGet for {pair}")
                 return pd.DataFrame()
             data['ts'] = data['ts'].astype(int)
             data['date'] = pd.to_datetime(data['ts'],unit='ms').dt.tz_localize(None).dt.date
@@ -296,7 +303,7 @@ class CEXDataLoader:
             data['volume_quote'] = data['baseVol']*data['close']
             return data[['baseVol']]
         else:
-            print("Did not receieve OK response from BitGet API for", pair)
+            logging.info(f"Did not receieve OK response from BitGet API for {pair}")
             return pd.DataFrame()
 
     def get_klines_by_exchange_pair(self, exchange: str, pair: str) -> pd.DataFrame:
@@ -305,7 +312,7 @@ class CEXDataLoader:
             result = fetch_func(pair)
             return result
         else:
-            print(f'No data for {exchange}')
+            logging.info(f"No data for {exchange}")
 
     def get_klines(self, pairs: list[str]) -> dict[tuple[str, str], pd.DataFrame]:
         klines_by_exchange = {}

@@ -10,7 +10,8 @@ from .prompts import (
     stEthToEth_prompt,
     dexLiquidityReserves_prompt,
     totalStEthInDeFi_prompt,
-    bridgedToCosmos_prompt
+    bridgedToCosmos_prompt,
+    stethVolumes_prompt
 )
 from datetime import datetime
 from langchain.chat_models.openai import ChatOpenAI
@@ -28,7 +29,8 @@ class BlockWriter:
             "dexLiquidityReserves": self.write_dexLiquidityReserves,
             "bridgeChange": self.write_bridgeChange,
             "totalStEthInDeFi": self.write_totalStEthInDeFi,
-            "bridgedToCosmos": self.write_bridgedToCosmos
+            "bridgedToCosmos": self.write_bridgedToCosmos,
+            "stethVolumes": self.write_stethVolumes
         }
 
     def write_block(self, processed_input: str, system_prompt: str) -> str:
@@ -67,8 +69,10 @@ class BlockWriter:
         return self.write_block(processed, bridgedToCosmos_prompt)
 
     def write_totalStEthInDeFi(self, processed):
-        print(processed)
         return self.write_block(processed, totalStEthInDeFi_prompt)
+    
+    def write_stethVolumes(self, processed):
+        return self.write_block(processed, stethVolumes_prompt)
 
     def compose_thread(self, processed: dict[str, str]):
         print(processed)

@@ -4,11 +4,15 @@ Today, you are responsible for writing the section of the thread about stETH APR
 ---
 ⚡️ stETH APR
 
-stETH APR saw an increase last week, with the 7d MA reaching 4.26%. 
+The 7d stETH APR is 36 basis points down to 3.18%.
 ---
 ⚡️ stETH APR
 
-The stETH APR has not experienced significant change with the 7d MA sitting at 4.04%.
+The 7d stETH APR decreased 14bp last week to 3.03%.
+---
+⚡️ stETH APR
+
+The 7d stETH APR is 8 basis points up to 3.29%.
 ---
 
 Use your knowledge of Lido, the data provided by your boss, and the examples above to write a section of the thread about stETH APR.
@@ -61,6 +65,8 @@ Lido secured the 2nd position in net deposits to the Beacon Chain, with a growth
 
 Use your knowledge of Lido, the data provided by your boss, and the examples above to present the depositing and unstaking activity of Lido on the Beacon Chain.
 If the data shows that it is a net deposit and the rank is <= 5, you may include it like in the first example. In all other cases, including the unstaking cases, do not include the rank information.
+
+Follow the examples closely.
 """
 
 stEthToEth_prompt = """
@@ -163,6 +169,29 @@ Use your knowledge of Lido, the data provided by your boss, and the examples abo
 Follow the examples closely.
 """
 
+stethVolumes_prompt = """
+You are a data analytics professional at Lido DAO. Your boss has assigned you to the team that writes weekly twitter threads about Lido statistics.
+Today, you are responsible for writing the section of the thread about the amount of wstETH bridged to Cosmos. Here are some examples:
+---
+🌊 stETH volumes
+
+(w)stETH 7d trading volume is $2.01b, -18.7% lower than last week.
+
+---
+🌊 stETH volumes
+
+(w)stETH 7d trading volume is $1.79b, -10.75% lower compared to the previous week.
+
+---
+🌊 stETH volumes
+
+(w)stETH 7d trading volume is $2.47b, +66.0% higher than last week.
+
+---
+Use your knowledge of Lido, the data provided by your boss, and the examples above to write a section of the thread about the amount of wstETH bridged to Cosmos.
+Follow the examples closely.
+"""
+
 thread_prompt = """
 You are writing a thread about Lido statistics for the week of {start_date} to {end_date}.
 You are a data analytics professional at Lido DAO. Your boss has assigned you to the team that writes weekly twitter threads about Lido statistics.
@@ -236,9 +265,9 @@ Check out the Lido Dashboards Catalogue https://dune.com/lido/lido-dashboards-ca
 
 Final instructions:
 Be sure to create a succint TL;DR section that summarizes the most important information from the thread.
-You must be sure to include every provided block in the thread, and follow the format of the examples.
-You should use a more varied vocabulary than the examples provided. 
-For example, instead of always saying "increase" or "decrease", you can use words like "dropped", "soared", "plumetted", "rose", "shrank", "jumped up", etc. 
+You must be sure to include every provided block in the thread, and follow the format of the examples closely. Do not omit any data in any block.
+You can use a more varied vocabulary than the examples provided. 
+For example, instead of always saying "increase" or "decrease", you can use words like "dropped", "soared", "plummeted", "rose", "shrank", "jumped up", etc. 
 Be sure to use the correct word for the situation. 
 For example, a small change should not be described as "soaring" or "plummeting".
 
