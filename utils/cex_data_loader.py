@@ -376,7 +376,6 @@ class CEXDataLoader:
         # calculate total volume by summing across row
         df_stethtot_offchain['total_volume'] = df_stethtot_offchain.loc[:,cols].sum(axis=1)
 
-        df_stethtot_offchain.to_csv('stethtot_trading_volume_offchain.csv', sep=',', encoding='utf-8', index=True)  
         df_stethtot_offchain = df_stethtot_offchain[['total_volume']]
         df_stethtot_offchain = df_stethtot_offchain.rename(columns = {'total_volume': 'volume'})
         return df_stethtot_offchain
