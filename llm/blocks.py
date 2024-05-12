@@ -10,6 +10,8 @@ from .prompts import (
     stEthToEth_prompt,
     dexLiquidityReserves_prompt,
     totalStEthInDeFi_prompt,
+    bridgedToCosmos_prompt,
+    stethVolumes_prompt
 )
 from datetime import datetime
 from langchain.chat_models.openai import ChatOpenAI
@@ -27,12 +29,14 @@ class BlockWriter:
             "dexLiquidityReserves": self.write_dexLiquidityReserves,
             "bridgeChange": self.write_bridgeChange,
             "totalStEthInDeFi": self.write_totalStEthInDeFi,
+            "bridgedToCosmos": self.write_bridgedToCosmos,
+            "stethVolumes": self.write_stethVolumes
         }
 
     def write_block(self, processed_input: str, system_prompt: str) -> str:
         today = datetime.today().strftime("%B %d %Y")
 
-        chat = ChatOpenAI(temperature=0, model="gpt-3.5-turbo-16k")  # type: ignore
+        chat = ChatOpenAI(temperature=0, model="gpt-4-turbo-2024-04-09")  # type: ignore
         thread = chat.predict_messages(
             [
                 SystemMessage(content=system_prompt.format(DATE=today) + "\n" + block_append_prompt),
@@ -60,10 +64,15 @@ class BlockWriter:
 
     def write_bridgeChange(self, processed_bridge_change):
         return self.write_block(processed_bridge_change, stEthOnL2Bridges_prompt)
+    
+    def write_bridgedToCosmos(self, processed):
+        return self.write_block(processed, bridgedToCosmos_prompt)
 
     def write_totalStEthInDeFi(self, processed):
-        print(processed)
         return self.write_block(processed, totalStEthInDeFi_prompt)
+    
+    def write_stethVolumes(self, processed):
+        return self.write_block(processed, stethVolumes_prompt)
 
     def compose_thread(self, processed: dict[str, str]):
         print(processed)

@@ -63,11 +63,23 @@ def get_queries(start_date: str, end_date: str, sol_start_deposits: float, sol_e
         ),
         "totalStEthInDeFi": QueryBase(
             name="totalStEthInDeFi",
-            query_id=2740414,
+            query_id=2740000,
             params=[
                 QueryParameter.date_type("digest_start_date", start_date),
                 QueryParameter.date_type("digest_end_date", end_date),
             ],
+        ),
+        "bridgedToCosmos": QueryBase(
+            name="bridgedToCosmos",
+            query_id=3215855,
+            params=[
+                QueryParameter.date_type("digest_start_date", start_date),
+                QueryParameter.date_type("digest_end_date", end_date),
+            ],
+        ),
+        "stethVolumes": QueryBase(
+            name="stethVolumes",
+            query_id=2810114
         ),
     }
     return queries

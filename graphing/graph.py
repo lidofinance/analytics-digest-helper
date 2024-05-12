@@ -11,7 +11,8 @@ import os
 
 
 class Grapher:
-    def __init__(self, end_date: str):
+    def __init__(self, start_date: datetime, end_date: datetime):
+        self.start_date = start_date
         self.end_date = end_date
         self.graphing_functions = {
             "netDepositGrowthLeaders": self.graph_netDepositGrowthLeaders,
@@ -20,6 +21,8 @@ class Grapher:
             "stEthToEth": self.graph_stEthToEth,
             "tvl": self.graph_tvl,
             "totalStEthInDeFi": self.graph_totalStEthInDeFi,
+            "bridgedToCosmos": self.graph_bridgedToCosmos,
+            "stethVolumes": self.graph_stethVolumes
             # "dexLiquidityReserves": self.graph_dexLiquidityReserves,
         }
         self.graph_location = f"/tmp/digest/{end_date}/graphs"
@@ -65,69 +68,29 @@ class Grapher:
 
     def graph_totalStEthInDeFi(self, df: pd.DataFrame):
 
-        original_df = df.copy()
-        # Convert time column to datetime format and set it as the index
-        df["time"] = pd.to_datetime(df["time"])
-        df.set_index("time", inplace=True)
+        # Order the dataframe from oldest to latest
+        df = df.sort_values("time")
 
-        # Create a figure and axis for the plot
-        fig, ax = plt.subplots(figsize=(10, 7))
+        # Get the latest row, that is the data at the end_date
+        latest_row = df.iloc[-1]
 
-        # Create the line plot
-        sns.lineplot(data=df, x=df.index, y="stETH_DeFi_share", ax=ax, color="blue")
+        # Extract the data that we need
+        lending_balance = f"{latest_row['lending_pools_balance']:,.0f}"
+        liquidity_balance = f"{latest_row['liquidity_pools_balance']:,.0f}"
+        lending_pct_change = f"{float(latest_row['lending_pct_change']):.2f}"
+        liquidity_pct_change = f"{float(latest_row['liquidity_pct_change']):.2f}"
 
-        # Set the x-axis formatter to display date in "Month Day" format
-        ax.xaxis.set_major_formatter(DateFormatter("%B %d"))
+        # Reshape df into desired structure
+        reshaped_df = pd.DataFrame({
+            'Type of pools': ['Lending', 'Liquidity'],
+            'stETH deposited': [lending_balance, liquidity_balance],
+            'Change, %': [lending_pct_change, liquidity_pct_change]
+        })
 
-        # Rotate x-axis labels for better visibility
-        plt.xticks(rotation=45)
-
-        # Set plot title and labels
-        ax.set_title("Total (w)stETH in DeFi")
-        ax.set_xlabel("")
-        ax.set_ylabel("")
-
-        self.save_figure(fig, "totalStEthInDeFi")
-
-        def extract_relevant_data(df):
-            """
-            Takes in a DataFrame and returns a table with specific columns for the latest data point 
-            and the data point 7 days before that.
-            """
-            # Convert 'time' to datetime format for easier manipulation
-            df['time'] = pd.to_datetime(df['time'])
-            
-            # Sort the DataFrame by 'time' in ascending order
-            df.sort_values('time', inplace=True)
-            
-            # Get the latest data point and the data point 7 days before that
-            latest_data = df.iloc[-1]
-            seven_days_before = df[df['time'] <= (latest_data['time'] - pd.Timedelta(days=7))].iloc[-1]
-            
-            # Create a new DataFrame to store these two rows
-            result_df = pd.DataFrame([latest_data, seven_days_before])
-            
-            # Keep only the relevant columns
-            result_df = result_df[['time', 'liquidity_pools', 'lending_pools', 'stETH_in_DeFi', 'stETH_DeFi_share']]
-            
-            return result_df
-        
         def format_and_save_table(df):
             """
             Formats and saves a DataFrame as a table image.
             """
-            # Replace NaN and other null-like values with an empty string
-            df.replace(["<nill>", "nil", "undefined", "null", np.nan], "", inplace=True)
-            
-            # Format the values in the table
-            for col in df.columns:
-                if col == "liquidity_pools" or col == "lending_pools" or col == "stETH_in_DeFi":
-                    df[col] = df[col].apply(lambda x: "{:,.0f}".format(x))  # Express in whole numbers with comma separators
-                elif col == "stETH_DeFi_share":
-                    df[col] = df[col].apply(lambda x: "{:.2f}%".format(x))  # Express as percentage
-                elif col == "time":
-                    df[col] = df[col].dt.strftime('%Y-%m-%d')  # Format datetime to string
-                
             # Create a figure and a subplot
             fig, ax = plt.subplots(figsize=(12, 2))
             
@@ -135,7 +98,7 @@ class Grapher:
             ax.axis("off")
             
             # Create the table and scale it to the subplot
-            table = plt.table(cellText=df.values, cellLoc="center", loc="center", colLabels=[col.replace('_', ' ').title() for col in df.columns])
+            table = plt.table(cellText=df.values, cellLoc="center", loc="center", colLabels=df.columns)
             table.auto_set_font_size(False)
             table.set_fontsize(10)
             table.scale(1, 1.5)
@@ -144,14 +107,12 @@ class Grapher:
             table.auto_set_column_width(col=list(range(len(df.columns))))
             for key, cell in table.get_celld().items():
                 if key[0] == 0:
-                    cell.set_fontsize(14)
-                    cell.set_facecolor('gray')
+                    cell.get_text().set_fontweight('bold')
+                    cell.set_facecolor('whitesmoke')
             
             self.save_figure(fig, "totalStEthInDeFi_table")
 
-        extracted_data = extract_relevant_data(original_df.copy())
-
-        format_and_save_table(extracted_data.copy())
+        format_and_save_table(reshaped_df)
 
             
 
@@ -320,7 +281,7 @@ class Grapher:
         df["day"] = pd.to_datetime(df["day"])
 
         # Filter out the data after July 16, 2023
-        df = df[df["day"] <= datetime.strptime(self.end_date, "%Y-%m-%d %H:%M:%S")]
+        df = df[df["day"] <= self.end_date]
 
         # Set 'day' as the index
         df.set_index("day", inplace=True)
@@ -362,6 +323,61 @@ class Grapher:
         plt.xticks(rotation=30)
 
         self.save_figure(fig, "stEthOnL2Bridges")
+
+    def graph_bridgedToCosmos(self, df: pd.DataFrame):
+        # Convert the 'day' column to datetime format
+        df["day"] = pd.to_datetime(df["day"])
+
+        # Reset default settings
+        plt.rcdefaults()
+
+        # Plot area chart
+        fig, ax = plt.subplots(figsize=(12,6))
+
+        ax.stackplot('day', 'balance_cumu', data=df[['day', 'balance_cumu']])
+
+        # Set plot title
+        ax.set_title("wstETH on Cosmos bridge over time", fontsize=16)
+
+        # Remove axis labels
+        ax.set_xlabel("")
+        ax.set_ylabel("")
+
+        # Define a function to format the date
+        def format_date(x, pos=None):
+            return mdates.num2date(x).strftime("%B %-d")
+        
+        # Set the date formatter for the x-axis
+        ax.xaxis.set_major_formatter(mtick.FuncFormatter(format_date))
+
+        # # Rotate date labels slightly
+        plt.xticks(rotation=30)
+
+        self.save_figure(plt, "bridgedToCosmos")
+
+    def graph_stethVolumes(self, df: pd.DataFrame):
+
+        df = df[(pd.to_datetime(df.index) <= self.end_date) & (pd.to_datetime(df.index) >= self.start_date)]
+
+        # Reset default settings
+        plt.rcdefaults()
+
+        fig, ax = plt.subplots(figsize=(10,8))
+
+        # sum across all dates
+        category_sums = df.sum()
+
+        # create pie chart
+        patches, labels, pct_texts = ax.pie(
+            category_sums, labels=category_sums.index, autopct='%1.1f%%', startangle=140, pctdistance=0.8, wedgeprops=dict(width=0.5), rotatelabels=True)
+        
+        # rotate the % as well
+        for label, pct_text in zip(labels, pct_texts):
+            pct_text.set_rotation(label.get_rotation())
+
+        plt.title('stETH volume aggregated by chain')
+        plt.tight_layout()
+        self.save_figure(plt, "stethVolumes")
 
     def process_all(self, dune_dataframes: dict[str, pd.DataFrame]):
         for df_name, df in dune_dataframes.items():

@@ -14,6 +14,7 @@ def get_query_result(queries, query_name, cluster="medium"):
     while attempts < 3:
         try:
             pd = dune.refresh_into_dataframe(query, performance=cluster)
+            # pd = dune.get_latest_result_dataframe(query.query_id)
             return pd
         except Exception as err:
             attempts += 1
