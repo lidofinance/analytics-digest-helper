@@ -32,7 +32,27 @@ class CEXDataLoader:
             'cointr': self.fetch_cointr_daily_data,
             'bitget': self.fetch_bitget_daily_data,
         }
-            
+        # default pairs for all exchanges
+        self.all_steth_pairs = [
+            "STETH/USDT", "STETH/USDC", "STETH/LUSD", "STETH/USD", "STETH/DAI",
+            "STETH/BUSD", "STETH/USDP", "STETH/TUSD", "STETH/WBTC", "STETH/BTC",
+            "STETH/LDO", "STETH/BTC","STETH/EUR", "STETH/WETH", "STETH/ETH"
+        ]
+        # specific pairs for exchanges (to override the default list above)
+        self.exchange_pairs = {
+            'bybit': ["STETH/USDT"]
+        }
+
+    def get_proxy_list(self):
+        # proxies are from Canada (country=CA)
+        proxy_list_url = "https://api.proxyscrape.com/v2/?request=displayproxies&protocol=http&timeout=10000&country=CA&ssl=all&anonymity=all"
+        response = requests.get(proxy_list_url)
+        if response.status_code == 200:
+            proxy_list = response.text.split('\r\n')[:-1]
+            return proxy_list
+        else:
+            return None
+
     def get_data_formated(self, data: pd.DataFrame, pair: str) -> pd.DataFrame: 
         data['symbol'] = pair
         data = data.set_index('date')
@@ -147,25 +167,35 @@ class CEXDataLoader:
         timestamp_from = int(datetime.timestamp(self.start_date)) * 1000 # as ms
         timestamp_to = int(datetime.timestamp(self.end_date)+86400) * 1000 # as ms
         symbol = pair.replace('/', '')
-        url = f'https://api.bybit.com/v5/market/kline?category=spot&symbol={symbol}&interval=D&end={timestamp_to}&start={timestamp_from}'
-        response = requests.get(url)
-        if response.status_code == 200 and len(json.loads(response.text)['result']) > 0:
-            data = pd.DataFrame(
-                json.loads(response.text)['result']['list'],
-                columns=['t', 'o', 'h', 'l', 'c', 'v', 'volume_quote']
-            )
-            if data.empty:
-                logging.info(f"Did not return any data from Bybit for {pair}")
-                return pd.DataFrame()
-            data['t'] = data['t'].astype(int)
-            data['date'] = pd.to_datetime(data['t'], unit='ms')
-            data['date'] = data['date'].dt.date
+        logging.info(f"Retrieving Bybit data for {pair} via proxy...") # Bybit API blocks US and CN
+        proxy_list = self.get_proxy_list()
+        for proxy in proxy_list:
+            proxies = {
+                "http": f"http://{proxy}",
+                "https": f"http://{proxy}",
+            }
+            url = f'https://api.bybit.com/v5/market/kline?category=spot&symbol={symbol}&interval=D&end={timestamp_to}&start={timestamp_from}'
+            try:
+                response = requests.get(url, proxies=proxies)
+            except Exception as e: # possibly timeout from proxy
+                logging.info(f"Could not get data from Bybit for {pair} for proxy {proxy}")
+                continue
+            if response.status_code == 200 and len(json.loads(response.text)['result']) > 0:
+                logging.info(f"Received results for {pair} using proxy {proxy}")
+                data = pd.DataFrame(
+                    json.loads(response.text)['result']['list'],
+                    columns=['t', 'o', 'h', 'l', 'c', 'v', 'volume_quote']
+                )
+                data['t'] = data['t'].astype(int)
+                data['date'] = pd.to_datetime(data['t'], unit='ms')
+                data['date'] = data['date'].dt.date
             
-            data = self.get_data_formated(data, pair)
-            return data[['v']]
-        else:
-            logging.info(f"Did not receieve OK response from Bybit API for {pair}")  
-            return pd.DataFrame()
+                data = self.get_data_formated(data, pair)
+                return data[['v']]
+            else:
+                logging.info(f"Could not get data from Bybit for {pair} for proxy {proxy}")
+        logging.info(f"Could not find any working proxy for Bybit API for {pair}. Error: {response.status_code}. Content: {response.content}")  
+        return pd.DataFrame()
 
     # https://huobiapi.github.io/docs/spot/v1/en/#get-klines-candles
     def fetch_huobi_daily_data(self, pair: str) -> pd.DataFrame:
@@ -314,11 +344,15 @@ class CEXDataLoader:
         else:
             logging.info(f"No data for {exchange}")
 
-    def get_klines(self, pairs: list[str]) -> dict[tuple[str, str], pd.DataFrame]:
+    def get_klines(self) -> dict[tuple[str, str], pd.DataFrame]:
         klines_by_exchange = {}
         for exchange in self.exchange_functions.keys():
-            for pair in pairs:
-                klines_by_exchange.update({(exchange, pair): self.get_klines_by_exchange_pair(exchange, pair)})
+            if exchange in self.exchange_pairs:
+                for pair in self.exchange_pairs[exchange]:
+                    klines_by_exchange.update({(exchange, pair): self.get_klines_by_exchange_pair(exchange, pair)})
+            else:
+                for pair in self.all_steth_pairs:
+                    klines_by_exchange.update({(exchange, pair): self.get_klines_by_exchange_pair(exchange, pair)})
         return klines_by_exchange
 
     def get_trading_volume(self, symbol: str) -> pd.DataFrame:
@@ -340,17 +374,12 @@ class CEXDataLoader:
         return data[['total_volume', 'price']]
     
     def get_offchain_df(self) -> pd.DataFrame:
-        all_steth_pairs = [
-            "STETH/USDT", "STETH/USDC", "STETH/LUSD", "STETH/USD", "STETH/DAI",
-            "STETH/BUSD", "STETH/USDP", "STETH/TUSD", "STETH/WBTC", "STETH/BTC",
-            "STETH/LDO", "STETH/BTC","STETH/EUR", "STETH/WETH", "STETH/ETH"
-        ]
 
         # get coingecko price
         steth_trading_volume = self.get_trading_volume('staked-ether')
 
         # get volume on exchanges 
-        stethtot_klines = self.get_klines(all_steth_pairs)
+        stethtot_klines = self.get_klines()
         stethtot_offchain_all = []
         for key in stethtot_klines.keys():
             if stethtot_klines[key].empty == False: 
@@ -378,4 +407,8 @@ class CEXDataLoader:
 
         df_stethtot_offchain = df_stethtot_offchain[['total_volume']]
         df_stethtot_offchain = df_stethtot_offchain.rename(columns = {'total_volume': 'volume'})
+
+        df_stethtot_offchain.to_csv('df_stethtot_offchain.csv')
+        # df_stethtot_offchain = pd.read_csv('df_stethtot_offchain.csv', index_col='date')
+        # df_stethtot_offchain.index = pd.to_datetime(df_stethtot_offchain.index)
         return df_stethtot_offchain
