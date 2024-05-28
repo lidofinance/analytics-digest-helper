@@ -408,7 +408,7 @@ class CEXDataLoader:
         df_stethtot_offchain = df_stethtot_offchain[['total_volume']]
         df_stethtot_offchain = df_stethtot_offchain.rename(columns = {'total_volume': 'volume'})
 
-        df_stethtot_offchain.to_csv('df_stethtot_offchain.csv')
+        # df_stethtot_offchain.to_csv('df_stethtot_offchain.csv')
         # df_stethtot_offchain = pd.read_csv('df_stethtot_offchain.csv', index_col='date')
         # df_stethtot_offchain.index = pd.to_datetime(df_stethtot_offchain.index)
         return df_stethtot_offchain
