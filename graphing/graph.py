@@ -128,7 +128,7 @@ class Grapher:
         # Format the values in the table
         for col in df.columns:
             if "change" in col.lower():
-                df[col] = pd.to_numeric(df[col], errors='coerce').apply(lambda x: "" if pd.isnull(x) else "{:.0f}%".format(x * 100))  # Rounded to no decimals
+                df[col] = pd.to_numeric(df[col], errors='coerce').apply(lambda x: "" if pd.isnull(x) else "{:.2f}%".format(x * 100))  # Rounded to 2 decimals
             elif col == "Tokens deposited":
                 df[col] = pd.to_numeric(df[col], errors='coerce').apply(lambda x: "" if pd.isnull(x) else "{:,.0f}".format(x))  # Express in whole numbers with comma separators, rounded to no decimals
             elif col == "TVL":
