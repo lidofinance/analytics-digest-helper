@@ -4,6 +4,7 @@ import requests
 import json
 from datetime import datetime, timedelta
 import logging
+import os
 
 logging.basicConfig(
     format='%(asctime)s %(levelname)s %(message)s',
@@ -32,7 +33,17 @@ class CEXDataLoader:
             'cointr': self.fetch_cointr_daily_data,
             'bitget': self.fetch_bitget_daily_data,
         }
-            
+        # default pairs for all exchanges
+        self.all_steth_pairs = [
+            "STETH/USDT", "STETH/USDC", "STETH/LUSD", "STETH/USD", "STETH/DAI",
+            "STETH/BUSD", "STETH/USDP", "STETH/TUSD", "STETH/WBTC", "STETH/BTC",
+            "STETH/LDO", "STETH/BTC","STETH/EUR", "STETH/WETH", "STETH/ETH"
+        ]
+        # specific pairs for exchanges (to override the default list above)
+        self.exchange_pairs = {
+            'bybit': ["STETH/USDT"]
+        }
+
     def get_data_formated(self, data: pd.DataFrame, pair: str) -> pd.DataFrame: 
         data['symbol'] = pair
         data = data.set_index('date')
@@ -142,17 +153,23 @@ class CEXDataLoader:
             logging.info(f"Did not receieve OK response from OKX API for {pair}")  
             return pd.DataFrame()
 
-    # https://bybit-exchange.github.io/docs/v5/market/kline
+    # https://www.bybit.com/en/trade/spot/STETH/USDT
     def fetch_bybit_daily_data(self, pair: str) -> pd.DataFrame:
         timestamp_from = int(datetime.timestamp(self.start_date)) * 1000 # as ms
         timestamp_to = int(datetime.timestamp(self.end_date)+86400) * 1000 # as ms
         symbol = pair.replace('/', '')
-        url = f'https://api.bybit.com/v5/market/kline?category=spot&symbol={symbol}&interval=D&end={timestamp_to}&start={timestamp_from}'
-        response = requests.get(url)
+        params = {
+            "symbol": symbol,
+            "interval": "1d",
+            "limit": (datetime.now() - self.start_date).days + 1,
+            "r": round(datetime.now().timestamp() * 1000) # current timestamp in ms
+        }
+        url = 'https://api2.bybit.com/spot/api/quote/v2/klines'
+        response = requests.get(url, params=params)
         if response.status_code == 200 and len(json.loads(response.text)['result']) > 0:
             data = pd.DataFrame(
-                json.loads(response.text)['result']['list'],
-                columns=['t', 'o', 'h', 'l', 'c', 'v', 'volume_quote']
+                json.loads(response.text)['result'],
+                columns=['t', 'o', 'h', 'l', 'c', 'v']
             )
             if data.empty:
                 logging.info(f"Did not return any data from Bybit for {pair}")
@@ -314,11 +331,15 @@ class CEXDataLoader:
         else:
             logging.info(f"No data for {exchange}")
 
-    def get_klines(self, pairs: list[str]) -> dict[tuple[str, str], pd.DataFrame]:
+    def get_klines(self) -> dict[tuple[str, str], pd.DataFrame]:
         klines_by_exchange = {}
         for exchange in self.exchange_functions.keys():
-            for pair in pairs:
-                klines_by_exchange.update({(exchange, pair): self.get_klines_by_exchange_pair(exchange, pair)})
+            if exchange in self.exchange_pairs:
+                for pair in self.exchange_pairs[exchange]:
+                    klines_by_exchange.update({(exchange, pair): self.get_klines_by_exchange_pair(exchange, pair)})
+            else:
+                for pair in self.all_steth_pairs:
+                    klines_by_exchange.update({(exchange, pair): self.get_klines_by_exchange_pair(exchange, pair)})
         return klines_by_exchange
 
     def get_trading_volume(self, symbol: str) -> pd.DataFrame:
@@ -340,17 +361,12 @@ class CEXDataLoader:
         return data[['total_volume', 'price']]
     
     def get_offchain_df(self) -> pd.DataFrame:
-        all_steth_pairs = [
-            "STETH/USDT", "STETH/USDC", "STETH/LUSD", "STETH/USD", "STETH/DAI",
-            "STETH/BUSD", "STETH/USDP", "STETH/TUSD", "STETH/WBTC", "STETH/BTC",
-            "STETH/LDO", "STETH/BTC","STETH/EUR", "STETH/WETH", "STETH/ETH"
-        ]
 
         # get coingecko price
         steth_trading_volume = self.get_trading_volume('staked-ether')
 
         # get volume on exchanges 
-        stethtot_klines = self.get_klines(all_steth_pairs)
+        stethtot_klines = self.get_klines()
         stethtot_offchain_all = []
         for key in stethtot_klines.keys():
             if stethtot_klines[key].empty == False: 
@@ -378,4 +394,8 @@ class CEXDataLoader:
 
         df_stethtot_offchain = df_stethtot_offchain[['total_volume']]
         df_stethtot_offchain = df_stethtot_offchain.rename(columns = {'total_volume': 'volume'})
+
+        # df_stethtot_offchain.to_csv('df_stethtot_offchain.csv')
+        # df_stethtot_offchain = pd.read_csv('df_stethtot_offchain.csv', index_col='date')
+        # df_stethtot_offchain.index = pd.to_datetime(df_stethtot_offchain.index)
         return df_stethtot_offchain

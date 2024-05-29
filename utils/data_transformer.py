@@ -45,14 +45,14 @@ class DataTransformer:
         tv_by_chain = {}
         for chain in chainlist:
             tv_by_chain.update({(chain): df.query('chain==@chain')[['date','volume']].set_index('date')})
-        
+
         stethtot_klines_chain = []
         for key in tv_by_chain.keys():
             if tv_by_chain[key].empty == False: 
                 k = tv_by_chain[key].copy()
                 k.columns = [key]
                 stethtot_klines_chain.append(k)
-    
+
         # off-chain section (exchange APIs)
 
         # first we need to extend the start date to include 1 more period before
@@ -284,14 +284,18 @@ class DataTransformer:
         period_length = (max_date - min_date + timedelta(days = 1)) / 2
         # this is start_date of current period
         start_date = min_date + period_length
-        previous_sum = df[pd.to_datetime(df.index) < start_date].sum().sum()
-        current_sum = df[pd.to_datetime(df.index) >= start_date].sum().sum()
+        previous_vol_by_chain = df[pd.to_datetime(df.index) < start_date].sum()
+        current_vol_by_chain = df[pd.to_datetime(df.index) >= start_date].sum()
+        previous_sum = previous_vol_by_chain.sum()
+        current_sum = current_vol_by_chain.sum()
         pct_change = (current_sum/previous_sum - 1) * 100
 
         result_string = (
             f"{period_length.days}d trading volume: ${current_sum}\n"
             f"Previous trading volume: ${previous_sum}\n"
-            f"Percentage change: {pct_change}"
+            f"Percentage change: {pct_change}\n"
+            f"{period_length.days}d trading volume breakdown: {current_vol_by_chain.to_json()}\n"
+            f"Previous trading volume breakdown: {previous_vol_by_chain.to_json()}\n"
         )
         return result_string
 

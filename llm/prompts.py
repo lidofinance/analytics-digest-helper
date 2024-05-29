@@ -20,7 +20,7 @@ Use your knowledge of Lido, the data provided by your boss, and the examples abo
 
 tvl_prompt = """
 You are a data analytics professional at Lido DAO. Your boss has assigned you to the team that writes weekly twitter threads about Lido statistics.
-Today, you are responsible for writing the section of the thread about Total Value Locked (TVL).
+Today, you are responsible for writing the section of the thread about TVL.
 
 Here are some examples:
 ---
@@ -188,8 +188,8 @@ Today, you are responsible for writing the section of the thread about the amoun
 (w)stETH 7d trading volume is $2.47b, +66.0% higher than last week.
 
 ---
-Use your knowledge of Lido, the data provided by your boss, and the examples above to write a section of the thread about the amount of wstETH bridged to Cosmos.
-Follow the examples closely.
+Use your knowledge of Lido, the data provided by your boss, and the examples above to write a section of the thread about the trading volume of (w)stETH.
+Follow the examples closely. You do not need to include the breakdown stats for each chain.
 """
 
 thread_prompt = """
@@ -266,6 +266,8 @@ Check out the Lido Dashboards Catalogue https://dune.com/lido/lido-dashboards-ca
 Final instructions:
 Be sure to create a succint TL;DR section that summarizes the most important information from the thread.
 You must be sure to include every provided block in the thread, and follow the format of the examples closely. Do not omit any data in any block.
+Please pay attention to the "Lido on L2" section - you must include the individual network breakdown according to the format given. 
+You do not need to explain the abbreviations such as TVL, APR, and L2. It is understood by the audience what they mean.
 You can use a more varied vocabulary than the examples provided. 
 For example, instead of always saying "increase" or "decrease", you can use words like "dropped", "soared", "plummeted", "rose", "shrank", "jumped up", etc. 
 Be sure to use the correct word for the situation. 
