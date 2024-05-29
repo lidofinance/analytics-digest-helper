@@ -4,6 +4,7 @@ import requests
 import json
 from datetime import datetime, timedelta
 import logging
+import os
 
 logging.basicConfig(
     format='%(asctime)s %(levelname)s %(message)s',
@@ -40,23 +41,13 @@ class CEXDataLoader:
         ]
         # specific pairs for exchanges (to override the default list above)
         self.exchange_pairs = {
-            'bybit': ["STETH/USDT"]
+            'bybit': ["STETH"] # for bybit we are using cryptocompare, so we only provide the asset symbol and not a pair
         }
-
-    def get_proxy_list(self):
-        # proxies are from Canada (country=CA)
-        proxy_list_url = "https://api.proxyscrape.com/v2/?request=displayproxies&protocol=http&timeout=10000&country=CA&ssl=all&anonymity=all"
-        response = requests.get(proxy_list_url)
-        if response.status_code == 200:
-            proxy_list = response.text.split('\r\n')[:-1]
-            return proxy_list
-        else:
-            return None
 
     def get_data_formated(self, data: pd.DataFrame, pair: str) -> pd.DataFrame: 
         data['symbol'] = pair
         data = data.set_index('date')
-        for col in ['open','close','high','low','volume','volume_quote','baseVol' ,'c','o','h','l','vol','v','currencyVol']:
+        for col in ['open','close','high','low','volume','volume_quote','baseVol' ,'c','o','h','l','vol','v','currencyVol','volumetotal']:
             if col in data.columns:
                 if type(data[col].values[0]) == str:
                     data[col] = data[col].str.replace(',','').astype(np.float64)
@@ -162,40 +153,24 @@ class CEXDataLoader:
             logging.info(f"Did not receieve OK response from OKX API for {pair}")  
             return pd.DataFrame()
 
-    # https://bybit-exchange.github.io/docs/v5/market/kline
-    def fetch_bybit_daily_data(self, pair: str) -> pd.DataFrame:
-        timestamp_from = int(datetime.timestamp(self.start_date)) * 1000 # as ms
-        timestamp_to = int(datetime.timestamp(self.end_date)+86400) * 1000 # as ms
-        symbol = pair.replace('/', '')
-        logging.info(f"Retrieving Bybit data for {pair} via proxy...") # Bybit API blocks US and CN
-        proxy_list = self.get_proxy_list()
-        for proxy in proxy_list:
-            proxies = {
-                "http": f"http://{proxy}",
-                "https": f"http://{proxy}",
-            }
-            url = f'https://api.bybit.com/v5/market/kline?category=spot&symbol={symbol}&interval=D&end={timestamp_to}&start={timestamp_from}'
-            try:
-                response = requests.get(url, proxies=proxies)
-            except Exception as e: # possibly timeout from proxy
-                logging.info(f"Could not get data from Bybit for {pair} for proxy {proxy}")
-                continue
-            if response.status_code == 200 and len(json.loads(response.text)['result']) > 0:
-                logging.info(f"Received results for {pair} using proxy {proxy}")
-                data = pd.DataFrame(
-                    json.loads(response.text)['result']['list'],
-                    columns=['t', 'o', 'h', 'l', 'c', 'v', 'volume_quote']
-                )
-                data['t'] = data['t'].astype(int)
-                data['date'] = pd.to_datetime(data['t'], unit='ms')
-                data['date'] = data['date'].dt.date
-            
-                data = self.get_data_formated(data, pair)
-                return data[['v']]
-            else:
-                logging.info(f"Could not get data from Bybit for {pair} for proxy {proxy}")
-        logging.info(f"Could not find any working proxy for Bybit API for {pair}. Error: {response.status_code}. Content: {response.content}")  
-        return pd.DataFrame()
+    # https://min-api.cryptocompare.com/documentation?key=Historical&cat=dataExchangeSymbolHistoday
+    # in this API, we don't fetch data for a pair such as STETH/USDT. instead we fetch volume for a single asset (symbol), e.g. STETH
+    def fetch_bybit_daily_data(self, symbol: str) -> pd.DataFrame:
+        api_key = os.environ["CRYPTOCOMPARE_API_KEY"]
+        timestamp_to = datetime.timestamp(self.end_date)+86400
+        url = f'https://min-api.cryptocompare.com/data/exchange/symbol/histoday?fsym={symbol}&tsym={symbol}&limit={self.period}&e=Bybit&toTs={timestamp_to}&api_key={api_key}'
+        response = requests.get(url)
+        if response.status_code == 200:
+            data = pd.DataFrame(json.loads(response.text)['Data'])
+            if data.empty:
+                logging.info(f"Did not return any data from Cryptocompare for Bybit {symbol}")
+                return pd.DataFrame()
+            data['date'] = pd.to_datetime(data['time'], unit='s')
+            data = self.get_data_formated(data, symbol)
+            return data[['volumetotal']]
+        else:
+            logging.info(f"Did not receive OK response from Cryptocompare for Bybit {symbol}")
+            return pd.DataFrame()
 
     # https://huobiapi.github.io/docs/spot/v1/en/#get-klines-candles
     def fetch_huobi_daily_data(self, pair: str) -> pd.DataFrame:
