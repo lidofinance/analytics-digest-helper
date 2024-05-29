@@ -47,7 +47,7 @@ class CEXDataLoader:
     def get_data_formated(self, data: pd.DataFrame, pair: str) -> pd.DataFrame: 
         data['symbol'] = pair
         data = data.set_index('date')
-        for col in ['open','close','high','low','volume','volume_quote','baseVol' ,'c','o','h','l','vol','v','currencyVol','volumetotal']:
+        for col in ['open','close','high','low','volume','volume_quote','baseVol' ,'c','o','h','l','vol','v','currencyVol']:
             if col in data.columns:
                 if type(data[col].values[0]) == str:
                     data[col] = data[col].str.replace(',','').astype(np.float64)
