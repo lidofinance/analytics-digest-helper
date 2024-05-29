@@ -41,7 +41,7 @@ class CEXDataLoader:
         ]
         # specific pairs for exchanges (to override the default list above)
         self.exchange_pairs = {
-            'bybit': ["STETH"] # for bybit we are using cryptocompare, so we only provide the asset symbol and not a pair
+            'bybit': ["STETH/USDT"]
         }
 
     def get_data_formated(self, data: pd.DataFrame, pair: str) -> pd.DataFrame: 
@@ -153,23 +153,35 @@ class CEXDataLoader:
             logging.info(f"Did not receieve OK response from OKX API for {pair}")  
             return pd.DataFrame()
 
-    # https://min-api.cryptocompare.com/documentation?key=Historical&cat=dataExchangeSymbolHistoday
-    # in this API, we don't fetch data for a pair such as STETH/USDT. instead we fetch volume for a single asset (symbol), e.g. STETH
-    def fetch_bybit_daily_data(self, symbol: str) -> pd.DataFrame:
-        api_key = os.environ["CRYPTOCOMPARE_API_KEY"]
-        timestamp_to = datetime.timestamp(self.end_date)+86400
-        url = f'https://min-api.cryptocompare.com/data/exchange/symbol/histoday?fsym={symbol}&tsym={symbol}&limit={self.period}&e=Bybit&toTs={timestamp_to}&api_key={api_key}'
-        response = requests.get(url)
-        if response.status_code == 200:
-            data = pd.DataFrame(json.loads(response.text)['Data'])
+    # https://www.bybit.com/en/trade/spot/STETH/USDT
+    def fetch_bybit_daily_data(self, pair: str) -> pd.DataFrame:
+        timestamp_from = int(datetime.timestamp(self.start_date)) * 1000 # as ms
+        timestamp_to = int(datetime.timestamp(self.end_date)+86400) * 1000 # as ms
+        symbol = pair.replace('/', '')
+        params = {
+            "symbol": symbol,
+            "interval": "1d",
+            "limit": (datetime.now() - self.start_date).days + 1,
+            "r": round(datetime.now().timestamp() * 1000) # current timestamp in ms
+        }
+        url = 'https://api2.bybit.com/spot/api/quote/v2/klines'
+        response = requests.get(url, params=params)
+        if response.status_code == 200 and len(json.loads(response.text)['result']) > 0:
+            data = pd.DataFrame(
+                json.loads(response.text)['result'],
+                columns=['t', 'o', 'h', 'l', 'c', 'v']
+            )
             if data.empty:
-                logging.info(f"Did not return any data from Cryptocompare for Bybit {symbol}")
+                logging.info(f"Did not return any data from Bybit for {pair}")
                 return pd.DataFrame()
-            data['date'] = pd.to_datetime(data['time'], unit='s')
-            data = self.get_data_formated(data, symbol)
-            return data[['volumetotal']]
+            data['t'] = data['t'].astype(int)
+            data['date'] = pd.to_datetime(data['t'], unit='ms')
+            data['date'] = data['date'].dt.date
+            
+            data = self.get_data_formated(data, pair)
+            return data[['v']]
         else:
-            logging.info(f"Did not receive OK response from Cryptocompare for Bybit {symbol}")
+            logging.info(f"Did not receieve OK response from Bybit API for {pair}")  
             return pd.DataFrame()
 
     # https://huobiapi.github.io/docs/spot/v1/en/#get-klines-candles

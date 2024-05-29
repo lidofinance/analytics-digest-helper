@@ -79,10 +79,6 @@ if __name__ == "__main__":
         print("Please set OPENAI_API_KEY environment variable")
         exit(1)
 
-    if os.environ.get("CRYPTOCOMPARE_API_KEY") is None:
-        print("Please set CRYPTOCOMPARE_API_KEY environment variable")
-        exit(1)
-
     parser = argparse.ArgumentParser(description="Lido Weekly Digest Helper")
     parser.add_argument(
         "-sd",
