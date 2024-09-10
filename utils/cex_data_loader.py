@@ -30,7 +30,7 @@ class CEXDataLoader:
             'bitrue': self.fetch_bitrue_daily_data,
             'dcoin': self.fetch_dcoin_daily_data,
             'azbit': self.fetch_azbit_daily_data,
-            'cointr': self.fetch_cointr_daily_data,
+            #'cointr': self.fetch_cointr_daily_data,
             'bitget': self.fetch_bitget_daily_data,
         }
         # default pairs for all exchanges
@@ -267,6 +267,7 @@ class CEXDataLoader:
             logging.info(f"Did not receieve OK response from Azbit API for {pair}")
             return pd.DataFrame()             
 
+    '''
     #https://cointr-ex.github.io/openapis/spot.html#market-specifications
     def fetch_cointr_daily_data(self, pair: str) -> pd.DataFrame:  
         timestamp_to = int(datetime.timestamp(self.end_date))
@@ -294,6 +295,7 @@ class CEXDataLoader:
         else:
             logging.info(f"Did not receieve OK response from CoinTR API for {pair}")
             return pd.DataFrame()
+    '''
 
     #https://bitgetlimited.github.io/apidoc/en/spot/#get-candle-data
     def fetch_bitget_daily_data(self, pair: str) -> pd.DataFrame:
