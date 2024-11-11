@@ -52,15 +52,11 @@ Here are some examples:
 ---
 ⚡️ Lido on Ethereum
 
-Lido secured the 2nd position in net deposits to the Beacon Chain, with a growth of 63,560 ETH in the last 7 days.
----
-⚡️ Lido on Ethereum
-
 -60,992 net ETH was unstaked from Beacon Chain through Lido in the last 7 days. 
 ---
 ⚡️ Lido on Ethereum
 
-9,856 net ETH was deposited to the Beacon Chain through Lido in the last 7 days.
+9,856 net ETH was staked to the Beacon Chain through Lido in the last 7 days.
 ---
 
 Use your knowledge of Lido, the data provided by your boss, and the examples above to present the depositing and unstaking activity of Lido on the Beacon Chain.
