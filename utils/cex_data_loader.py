@@ -32,6 +32,7 @@ class CEXDataLoader:
             'azbit': self.fetch_azbit_daily_data,
             #'cointr': self.fetch_cointr_daily_data,
             'bitget': self.fetch_bitget_daily_data,
+            'deribit': self.fetch_deribit_daily_data,
         }
         # default pairs for all exchanges
         self.all_steth_pairs = [
@@ -41,7 +42,7 @@ class CEXDataLoader:
         ]
         # specific pairs for exchanges (to override the default list above)
         self.exchange_pairs = {
-            'bybit': ["STETH/USDT"]
+            'bybit': ["STETH/USDT", "STETH/EUR"]
         }
 
     def get_data_formated(self, data: pd.DataFrame, pair: str) -> pd.DataFrame: 
@@ -325,6 +326,31 @@ class CEXDataLoader:
             logging.info(f"Did not receieve OK response from BitGet API for {pair}")
             return pd.DataFrame()
 
+    # https://www.deribit.com/api/v2/public/get_tradingview_chart_data?end_timestamp=1731283199000&instrument_name=STETH_ETH&resolution=1D&start_timestamp=1730419200000
+    def fetch_deribit_daily_data(self, pair: str)-> pd.DataFrame:
+        timestamp_from = int(datetime.timestamp(self.start_date)) * 1000
+        timestamp_to = (int(datetime.timestamp(self.end_date))+86400) * 1000
+        pair_split = pair.split('/')  
+        symbol = pair_split[0] + '_' + pair_split[1]
+        url = f'https://www.deribit.com/api/v2/public/get_tradingview_chart_data?end_timestamp={timestamp_to}&instrument_name={symbol}&resolution=1D&start_timestamp={timestamp_from}'
+        
+        response = requests.get(url)
+        if response.status_code == 200:  
+            result = json.loads(response.text)['result']
+            data = pd.DataFrame(result, columns=['volume', 'ticks', 'status', 'open', 'low', 'high', 'cost', 'close'])
+
+            if data.empty:
+                print("Did not return any data from Deribit for", pair)
+                return pd.DataFrame()
+            data['date'] = pd.to_datetime(data['ticks'], unit='ms').dt.tz_localize(None).dt.date
+            
+            data = self.get_data_formated(data, pair) 
+            return data[['volume']]
+            
+        else:
+            print("Did not receieve OK response from Deribit API for", pair)
+            return pd.DataFrame()
+    
     def get_klines_by_exchange_pair(self, exchange: str, pair: str) -> pd.DataFrame:
         fetch_func = self.exchange_functions.get(exchange)
         if fetch_func:
@@ -401,3 +427,4 @@ class CEXDataLoader:
         # df_stethtot_offchain = pd.read_csv('df_stethtot_offchain.csv', index_col='date')
         # df_stethtot_offchain.index = pd.to_datetime(df_stethtot_offchain.index)
         return df_stethtot_offchain
+
