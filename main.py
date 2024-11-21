@@ -13,6 +13,7 @@ import pickle
 import requests
 
 def main(
+    save_location: str,
     start_date: datetime.datetime,
     end_date: datetime.datetime,
     sol_start_deposits: float,
@@ -29,7 +30,6 @@ def main(
     thread = writer.compose_thread(processed)
     print(thread)
 
-    save_location = f"/tmp/digest/{end_date}"
     Path(f"{save_location}").mkdir(parents=True, exist_ok=True)
 
     print("Writing thread to file")
@@ -38,7 +38,7 @@ def main(
     print(f"Wrote thread to file in {save_location}/thread.md")
 
     print("Graphing")
-    grapher = Grapher(start_date, end_date)
+    grapher = Grapher(start_date, end_date, save_location)
     grapher.process_all(dune_enriched)
     print(f"Done Graphing. Graphs are saved in {save_location}/graphs folder")
     end_time = time.time()
@@ -94,6 +94,11 @@ if __name__ == "__main__":
         required=False,
         help="Description for end_date argument in %Y-%m-%d format",
     )
+    parser.add_argument(
+        "--save-location",
+        type=str,
+        required=False,
+    )
     args = parser.parse_args()
 
     # convert start date and ed to datetime objects
@@ -107,7 +112,9 @@ if __name__ == "__main__":
         start_date = datetime.datetime.strptime(args.start_date, "%Y-%m-%d")
         end_date = datetime.datetime.strptime(args.end_date, "%Y-%m-%d")
 
+    save_location = args.save_location or f"/tmp/digest/{end_date}"
+
     print(f"start_date: {str(start_date)}")
     print(f"end_date: {str(end_date)}")
 
-    main(start_date, end_date, 0, 0)
+    main(save_location, start_date, end_date, 0, 0)

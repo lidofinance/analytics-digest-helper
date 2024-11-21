@@ -11,7 +11,7 @@ import os
 
 
 class Grapher:
-    def __init__(self, start_date: datetime, end_date: datetime):
+    def __init__(self, start_date: datetime, end_date: datetime, save_location):
         self.start_date = start_date
         self.end_date = end_date
         self.graphing_functions = {
@@ -25,7 +25,7 @@ class Grapher:
             "stethVolumes": self.graph_stethVolumes
             # "dexLiquidityReserves": self.graph_dexLiquidityReserves,
         }
-        self.graph_location = f"/tmp/digest/{end_date}/graphs"
+        self.graph_location = f"{save_location}/graphs"
         Path(self.graph_location).mkdir(parents=True, exist_ok=True)
 
     def graph_dexLiquidityReserves(self, df: pd.DataFrame,):
