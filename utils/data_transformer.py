@@ -2,6 +2,7 @@ import pandas as pd
 from datetime import datetime, timedelta
 from utils.cex_data_loader import CEXDataLoader
 import logging
+import numpy as np
 
 logging.basicConfig(
     format='%(asctime)s %(levelname)s %(message)s',
@@ -36,6 +37,10 @@ class DataTransformer:
     def enrich_stethVolumes(df: pd.DataFrame, start_date: datetime, end_date: datetime) -> pd.DataFrame:
         # on-chain section (dune)
         df['date'] = pd.to_datetime(df['day']).dt.date
+        # in volume column, replace "<nil>" with NaN first
+        df['volume'] = df['volume'].replace('<nil>', np.nan)
+        # then convert to numeric
+        df['volume'] = pd.to_numeric(df['volume'])
         df = df[['date','chain','volume']].groupby(['date','chain']).agg({'volume': ['sum']}).reset_index()
         df.columns = ['date', 'chain', 'volume']
         chainlist = []
